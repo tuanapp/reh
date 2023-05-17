@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grade 4 Math Questions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    
+    h1 {
+      text-align: center;
+    }
+    
+    form {
+      margin: 0 auto;
+      width: 400px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    input[type="number"] {
+      width: 100%;
+      padding: 5px;
+    }
+    
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    
+    .question {
+      margin: 20px auto;
+      text-align: center;
+      font-size: 20px;
+    }
+    
+    .answer-correct {
+      color: green;
+    }
+    
+    .answer-incorrect {
+      color: red;
+    }
+    
+    .answer-display {
+      background-color: #ccc;
+      padding: 10px;
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Grade 4 Math Questions</h1>
+  
+  <form id="settings-form">
+    <label for="addition-digits">Addition: Maximum Number of Digits</label>
+    <input type="number" id="addition-digits" min="1" value="2">
+    
+    <label for="subtraction-digits">Subtraction: Maximum Number of Digits</label>
+    <input type="number" id="subtraction-digits" min="1" value="2">
+    
+    <label for="multiplication-digits">Multiplication: Maximum Number of Digits</label>
+    <input type="number" id="multiplication-digits" min="1" value="2">
+    
+    <label for="division-digits">Division: Maximum Number of Digits</label>
+    <input type="number" id="division-digits" min="1" value="2">
+    
+    <button type="submit">Generate Questions</button>
+  </form>
+  
+  <form id="a-form"></form>
+    <button id="check-answers" type="submit">Check Answers</button>
+  
+  
+  <div id="questions-container"></div>
+  
+  <div id="answer-display" class="answer-display"></div>
+  
+  <script>
+    document.getElementById("settings-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      
+      var additionDigits = document.getElementById("addition-digits").value;
+      var subtractionDigits = document.getElementById("subtraction-digits").value;
+      var multiplicationDigits = document.getElementById("multiplication-digits").value;
+      var divisionDigits = document.getElementById("division-digits").value;
+      
+      generateQuestions(additionDigits, subtractionDigits, multiplicationDigits, divisionDigits);
+    });
+    
+    function generateQuestions(additionDigits, subtractionDigits, multiplicationDigits, divisionDigits) {
+      var questionsContainer = document.getElementById("questions-container");
+      questionsContainer.innerHTML = "";
+      
+      var additionQuestion = generateAdditionQuestion(additionDigits);
+      var subtractionQuestion = generateSubtractionQuestion(subtractionDigits);
+      var multiplicationQuestion = generateMultiplicationQuestion(multiplicationDigits);
+      var divisionQuestion = generateDivisionQuestion(divisionDigits);
+      
+      var additionElement = createQuestionElement("Addition", additionQuestion);
+      questionsContainer.appendChild(additionElement);
+      
+      var subtractionElement = createQuestionElement("Subtraction", subtractionQuestion);
+questionsContainer.appendChild(subtractionElement);
+
+  var multiplicationElement = createQuestionElement("Multiplication", multiplicationQuestion);
+  questionsContainer.appendChild(multiplicationElement);
+  
+  var divisionElement = createQuestionElement("Division", divisionQuestion);
+  questionsContainer.appendChild(divisionElement);
+}
+
+function createQuestionElement(questionType, questionText) {
+  var questionElement = document.createElement("div");
+  questionElement.className = "question";
+  
+  var questionLabel = document.createElement("span");
+  questionLabel.textContent = questionType + ": ";
+  questionElement.appendChild(questionLabel);
+  
+  var questionTextSpan = document.createElement("span");
+  questionTextSpan.textContent = questionText;
+  questionElement.appendChild(questionTextSpan);
+  
+  var answerInput = document.createElement("input");
+  answerInput.type = "number";
+  answerInput.className = "answer-input";
+  questionElement.appendChild(answerInput);
+  
+  return questionElement;
+}
+
+function generateAdditionQuestion(digits) {
+  var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  return number1 + " + " + number2;
+}
+
+function generateSubtractionQuestion(digits) {
+  var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  return number1 + " - " + number2;
+}
+
+function generateMultiplicationQuestion(digits) {
+  var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  return number1 + " × " + number2;
+}
+
+function generateDivisionQuestion(digits) {
+  var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  var dividend = number1 * number2;
+  return dividend + " ÷ " + number1;
+}
+
+document.getElementById("check-answers").addEventListener("click", function() {
+  var answerInputs = document.getElementsByClassName("answer-input");
+  var answerDisplay = document.getElementById("answer-display");
+  
+  debugger
+  //answerDisplay.innerHTML = "";
+  
+  for (var i = 0; i < answerInputs.length; i++) {
+    var answerInput = answerInputs[i];
+    var questionType = answerInput.parentNode.firstChild.textContent;
+    var question = answerInput.parentNode.firstChild.nextSibling.textContent;
+    var userAnswer = parseInt(answerInput.value);
+    var correctAnswer = evaluateQuestion(questionType, question);
+    
+    var answerElement = document.createElement("div");
+    
+    if (userAnswer === correctAnswer) {
+      answerInput.classList.add("answer-correct");
+      answerElement.textContent = "Correct!";
+      answerElement.classList.add("answer-correct");
+    } else {
+      answerInput.classList.add("answer-incorrect");
+      answerElement.textContent = "Incorrect! The correct answer is " + correctAnswer + ".";
+      answerElement.classList.add("answer-incorrect");
+    }
+
+      answerInput.after(answerElement);
+      //answerDisplay.appendChild(answerElement);
+  }
+});
+
+function evaluateQuestion(questionType, question) {
+  var operands = question.split(/\+|\-|\×|\÷/);
+  var operand1 = parseInt(operands[0]);
+var operand2 = parseInt(operands[1]);
+
+  if (questionType.includes("Addition")) {
+    return operand1 + operand2;
+  } else if (questionType.includes(  "Subtraction")) {
+    return operand1 - operand2;
+  } else if (questionType.includes(  "Multiplication")) {
+    return operand1 * operand2;
+  } else if (questionType.includes(  "Division")) {
+    return operand1 / operand2;
+  }
+}
+
+  </script>
+</body>
+</html>
