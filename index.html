@@ -198,9 +198,13 @@ questionsContainer.appendChild(subtractionElement);
 }
 
 function createQuestionElement(questionType, questionText) {
+
   var questionElement = document.createElement("div");
   questionElement.className = "question";
   
+  var hrElement = document.createElement("hr");
+  questionElement.appendChild(hrElement);
+
   var questionLabel = document.createElement("span");
   questionLabel.textContent = questionType + ": ";
   questionLabel.className = "qlbl";
@@ -247,13 +251,14 @@ document.getElementById("check-answers").addEventListener("click", function() {
   var answerInputs = document.getElementsByClassName("answer-input");
   var answerDisplay = document.getElementById("answer-display");
   
-  debugger
+  
   //answerDisplay.innerHTML = "";
   
   for (var i = 0; i < answerInputs.length; i++) {
     var answerInput = answerInputs[i];
-    var questionType = answerInput.parentNode.firstChild.textContent;
-    var question = answerInput.parentNode.firstChild.nextSibling.textContent;
+    var questionType = answerInput.parentNode.firstChild.nextSibling.textContent;
+    debugger
+    var question = answerInput.parentNode.firstChild.nextSibling.nextSibling.textContent;
     var userAnswer = parseInt(answerInput.value);
     var correctAnswer = evaluateQuestion(questionType, question);
     
