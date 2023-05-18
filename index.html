@@ -7,13 +7,13 @@
       font-family: Arial, sans-serif;
     }
     
-    h1 {
+    h2 {
       text-align: center;
     }
     
     form {
       margin: 0 auto;
-      width: 400px;
+      width: 80%;
     }
     
     label {
@@ -22,8 +22,9 @@
     }
     
     input[type="number"] {
-      width: 100%;
+      width: 100px;
       padding: 5px;
+      margin-left: 5px;
     }
     
     button {
@@ -54,35 +55,112 @@
       font-size: 16px;
       text-align: center;
     }
+
+    #questions-container{
+      color: blue;
+      width: 400px;
+      margin: 0 auto;
+      padding-top: 10px;
+    }
+
+    .qrow {
+      text-align: left;
+      float: left;
+      padding-right: 5px;
+      border-right: solid;
+      padding-left: 5px;
+    }
+
+    .btn{
+      margin-left: 5px;
+      background-color: #FF69B4; border: none; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;
+      font-weight: bolder;
+    }
+
+    .center{
+      margin: 0 auto; width: 80%;
+    }
+
+    .qlbl{
+      padding-right: 30px;
+      float: left;
+      width: 100px;
+      font-size: 15px;
+    }
+
+    .task {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
   </style>
 </head>
 <body>
-  <h1>Grade 4 Math Questions</h1>
+  <h2>Grade 4 Math Questions</h2>
   
   <form id="settings-form">
-    <label for="addition-digits">Addition: Maximum Number of Digits</label>
-    <input type="number" id="addition-digits" min="1" value="2">
-    
-    <label for="subtraction-digits">Subtraction: Maximum Number of Digits</label>
-    <input type="number" id="subtraction-digits" min="1" value="2">
-    
-    <label for="multiplication-digits">Multiplication: Maximum Number of Digits</label>
-    <input type="number" id="multiplication-digits" min="1" value="2">
-    
-    <label for="division-digits">Division: Maximum Number of Digits</label>
-    <input type="number" id="division-digits" min="1" value="2">
-    
-    <button type="submit">Generate Questions</button>
+    <span class="qrow">
+      <label for="addition-digits">Addition: Maximum Digits</label>
+      <input type="number" id="addition-digits" min="2" value="3">
+    </span>
+    <span class="qrow">
+      <label for="subtraction-digits">Subtraction: Maximum Digits</label>
+      <input type="number" id="subtraction-digits" min="1" value="3">
+    </span>
+    <span class="qrow">
+      <label for="multiplication-digits">Multiplication: Maximum Digits</label>
+      <input type="number" id="multiplication-digits" min="1" value="2">
+    </span>
+    <span class="qrow">
+      <label for="division-digits">Division: Maximum Digits</label>
+      <input type="number" id="division-digits" min="1" value="2">
+    </span>
+    <button type="submit" class="btn">Generate Questions</button>
   </form>
   
-  <form id="a-form"></form>
-    <button id="check-answers" type="submit">Check Answers</button>
-  
-  
-  <div id="questions-container"></div>
-  
-  <div id="answer-display" class="answer-display"></div>
-  
+  <br><hr>
+
+  <div class="center">  
+    <div id="questions-container"></div>
+    
+    <div id="answer-display" class="answer-display"></div>
+
+    <button id="check-answers" type="submit" class="btn">Check Answers</button>
+
+    <h2>Daily Checklist</h2>
+    <div class="task">
+      <label>
+        <input type="checkbox">
+        Read 4 pages of harry potter
+      </label>
+    </div>
+    <div class="task">
+      <label>
+        <input type="checkbox">
+        Pangrams
+      </label>
+    </div>
+    <div class="task">
+      <label>
+        <input type="checkbox">
+        Do a page from Match Workbook
+      </label>
+    </div>
+    <div class="task">
+      <label>
+        <input type="checkbox">
+        Dictation List
+      </label>
+    </div>
+</div>
+
   <script>
     document.getElementById("settings-form").addEventListener("submit", function(event) {
       event.preventDefault();
@@ -93,6 +171,8 @@
       var divisionDigits = document.getElementById("division-digits").value;
       
       generateQuestions(additionDigits, subtractionDigits, multiplicationDigits, divisionDigits);
+
+      document.getElementById("check-answers").disabled = false;
     });
     
     function generateQuestions(additionDigits, subtractionDigits, multiplicationDigits, divisionDigits) {
@@ -123,6 +203,7 @@ function createQuestionElement(questionType, questionText) {
   
   var questionLabel = document.createElement("span");
   questionLabel.textContent = questionType + ": ";
+  questionLabel.className = "qlbl";
   questionElement.appendChild(questionLabel);
   
   var questionTextSpan = document.createElement("span");
@@ -191,6 +272,10 @@ document.getElementById("check-answers").addEventListener("click", function() {
       answerInput.after(answerElement);
       //answerDisplay.appendChild(answerElement);
   }
+
+  // Disable the button after checking the answers
+  document.getElementById("check-answers").disabled = true;
+
 });
 
 function evaluateQuestion(questionType, question) {
