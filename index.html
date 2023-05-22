@@ -203,18 +203,18 @@
       questionsContainer.appendChild(subtractionElement);
 
       //Mul
-      var multiplicationQuestion1 = generateMultiplicationQuestion(2);
-      multiplicationQuestion1 = fetchQuestion("mul1", multiplicationQuestion1);
-      var multiplicationElement1 = createQuestionElement("Multiplication", multiplicationQuestion1);
-      questionsContainer.appendChild(multiplicationElement1);
-
-      var multiplicationQuestion2 = generateMultiplicationQuestion(multiplicationDigits);
+      GenerateQuestionItem("Multiplication1", 2,questionsContainer);
+      GenerateQuestionItem("Multiplication2", multiplicationDigits,questionsContainer);
+      /*var multiplicationQuestion2 = generateMultiplicationQuestion(multiplicationDigits);
       multiplicationQuestion2 = fetchQuestion("mul2", multiplicationQuestion2);
       var multiplicationElement2 = createQuestionElement("Multiplication", multiplicationQuestion2);
-      questionsContainer.appendChild(multiplicationElement2);
+      questionsContainer.appendChild(multiplicationElement2);*/
 
       //Div
-      var divisionQuestion1 = generateDivisionQuestion(1);
+      GenerateQuestionItem("Division1", 1,questionsContainer);
+      GenerateQuestionItem("Division2", divisionDigits,questionsContainer);
+
+      /*var divisionQuestion1 = generateDivisionQuestion(1);
       divisionQuestion1 = fetchQuestion("div1", divisionQuestion1);
       var divisionElement1 = createQuestionElement("Basic Division", divisionQuestion1);
       questionsContainer.appendChild(divisionElement1);
@@ -222,9 +222,17 @@
       var divisionQuestion2 = generateDivisionQuestion(divisionDigits);
       divisionQuestion2 = fetchQuestion("div2", divisionQuestion2);
       var divisionElement2 = createQuestionElement("Division", divisionQuestion2);
-      questionsContainer.appendChild(divisionElement2);
+      questionsContainer.appendChild(divisionElement2);*/
 
       setExpired();
+}
+
+function GenerateQuestionItem(key, digit,questionsContainer)
+{
+    var q = generateMultiplicationQuestion(digit);
+    q = fetchQuestion(key, q);
+    var qElm = createQuestionElement(key, q);
+    questionsContainer.appendChild(qElm);
 }
 
 function createQuestionElement(questionType, questionText) {
