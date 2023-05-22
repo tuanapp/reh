@@ -124,9 +124,10 @@
       <label for="division-digits">Division: Maximum Digits</label>
       <input type="number" id="division-digits" min="1" value="2">
     </span>
-    <button type="submit" class="btn">Generate Questions</button>
+    <button type="submit" class="btn">Generate Questions</button> 
+    
   </form>
-  
+  <button class="btn" onclick="reset()"  >Clear</button>
   <br><hr>
 
   <div class="center">  
@@ -182,21 +183,36 @@
       questionsContainer.innerHTML = "";
       
       var additionQuestion = generateAdditionQuestion(additionDigits);
+      additionQuestion = fetchQuestion("add", additionQuestion); //store
+
+      debugger
       var subtractionQuestion = generateSubtractionQuestion(subtractionDigits);
+      subtractionQuestion = fetchQuestion("sub", subtractionQuestion);
+
       var multiplicationQuestion = generateMultiplicationQuestion(multiplicationDigits);
-      var divisionQuestion = generateDivisionQuestion(divisionDigits);
+      multiplicationQuestion = fetchQuestion("mul", multiplicationQuestion);
+      
+      var divisionQuestion1 = generateDivisionQuestion(1);
+      divisionQuestion1 = fetchQuestion("div1", divisionQuestion1);
+
+      var divisionQuestion2 = generateDivisionQuestion(divisionDigits);
+      divisionQuestion2 = fetchQuestion("div2", divisionQuestion2);
       
       var additionElement = createQuestionElement("Addition", additionQuestion);
       questionsContainer.appendChild(additionElement);
       
       var subtractionElement = createQuestionElement("Subtraction", subtractionQuestion);
-questionsContainer.appendChild(subtractionElement);
+      questionsContainer.appendChild(subtractionElement);
 
-  var multiplicationElement = createQuestionElement("Multiplication", multiplicationQuestion);
-  questionsContainer.appendChild(multiplicationElement);
-  
-  var divisionElement = createQuestionElement("Division", divisionQuestion);
-  questionsContainer.appendChild(divisionElement);
+      var multiplicationElement = createQuestionElement("Multiplication", multiplicationQuestion);
+      questionsContainer.appendChild(multiplicationElement);
+      
+      var divisionElement1 = createQuestionElement("Division", divisionQuestion1);
+      questionsContainer.appendChild(divisionElement1);
+      var divisionElement2 = createQuestionElement("Division", divisionQuestion2);
+      questionsContainer.appendChild(divisionElement2);
+
+      setExpired();
 }
 
 function createQuestionElement(questionType, questionText) {
@@ -243,10 +259,17 @@ function generateMultiplicationQuestion(digits) {
 }
 
 function generateDivisionQuestion(digits) {
-  var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
-  var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
-  var dividend = number1 * number2;
-  return dividend + " ÷ " + number1;
+  //var divisor = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+  var quotient = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+
+  //var dividend1 = Math.floor(Math.random() * 1001); // Generate a random dividend less than 1001
+  var divisors = [2, 3, 4, 5, 10];
+  var divisor = divisors[Math.floor(Math.random() * divisors.length)]; // Select a random divisor from the given options
+  //var quotient = Math.floor(dividend1 / divisor);  
+  //number2 = divisor;
+
+  var dividend = divisor * quotient;
+  return dividend + " ÷ " + divisor;
 }
 
 document.getElementById("check-answers").addEventListener("click", function() {
@@ -301,6 +324,62 @@ var operand2 = parseInt(operands[1]);
   }
 }
 
+
+/* storage machanism */
+function reset(){
+  debugger
+  localStorage.removeItem('add');localStorage.removeItem('expirationDate');
+}
+
+function fetchQuestion(key, val) {
+  if (!isRandomValueExpired(key)) {
+        var storedValue = localStorage.getItem(key);
+        //console.log('Stored random value:', randomValue);
+        return storedValue;
+      } else {
+        storeRandomValue(key, val);
+        return val;
+        //console.log('Random value expired or not set.');
+      }
+}
+
+// Store the random value in localStorage
+function storeRandomValue(key, val) {
+      localStorage.setItem(key, val);      
+    }
+
+    // Check if the stored random value is expired
+    function isRandomValueExpired(key) {
+      var expirationDate = localStorage.getItem('expirationDate');
+      if (expirationDate) {
+        return new Date().getTime() > parseInt(expirationDate);
+      }
+      return true;
+    }
+
+    function setExpired() {
+      var expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 1);
+      localStorage.setItem('expirationDate', expirationDate.getTime());
+    }
+
+    // Retrieve the stored random value
+    function getStoredRandomValue(key) {
+      if (!isRandomValueExpired(key)) {
+        var storedValue = localStorage.getItem(key);
+        console.log('Stored random value:', randomValue);
+        return storedValue;
+      } else {
+        console.log('Random value expired or not set.');
+      }
+    }
+
+
   </script>
+
+<hr>
+<a href="https://github.com/tuanapp/reh/blob/main/index.html" >repo</a> | 
+<a href="https://tuanapp.github.io/reh/" >public url</a>
+
 </body>
 </html>
