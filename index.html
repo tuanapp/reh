@@ -189,30 +189,31 @@
       var questionsContainer = document.getElementById("questions-container");
       questionsContainer.innerHTML = "";
       
-      var additionQuestion = generateAdditionQuestion(additionDigits);
+      GenerateQuestionItem("Addition", additionDigits, questionsContainer, generateAdditionQuestion);
+
+      /*var additionQuestion = generateAdditionQuestion(additionDigits);
       additionQuestion = fetchQuestion("add", additionQuestion); //store
-
-      debugger
-      var subtractionQuestion = generateSubtractionQuestion(subtractionDigits);
-      subtractionQuestion = fetchQuestion("sub", subtractionQuestion);
-
       var additionElement = createQuestionElement("Addition", additionQuestion);
-      questionsContainer.appendChild(additionElement);
+      questionsContainer.appendChild(additionElement);*/
+
+      GenerateQuestionItem("Subtraction", subtractionDigits, questionsContainer, generateSubtractionQuestion);
       
+      /*var subtractionQuestion = generateSubtractionQuestion(subtractionDigits);
+      subtractionQuestion = fetchQuestion("sub", subtractionQuestion);
       var subtractionElement = createQuestionElement("Subtraction", subtractionQuestion);
-      questionsContainer.appendChild(subtractionElement);
+      questionsContainer.appendChild(subtractionElement);*/
 
       //Mul
-      GenerateQuestionItem("Multiplication1", 2,questionsContainer);
-      GenerateQuestionItem("Multiplication2", multiplicationDigits,questionsContainer);
+      GenerateQuestionItem("Multiplication1", 2,questionsContainer, generateMultiplicationQuestion);
+      GenerateQuestionItem("Multiplication2", multiplicationDigits,questionsContainer, generateMultiplicationQuestion);
       /*var multiplicationQuestion2 = generateMultiplicationQuestion(multiplicationDigits);
       multiplicationQuestion2 = fetchQuestion("mul2", multiplicationQuestion2);
       var multiplicationElement2 = createQuestionElement("Multiplication", multiplicationQuestion2);
       questionsContainer.appendChild(multiplicationElement2);*/
 
       //Div
-      GenerateQuestionItem("Division1", 1,questionsContainer);
-      GenerateQuestionItem("Division2", divisionDigits,questionsContainer);
+      GenerateQuestionItem("Division1", 1,questionsContainer, generateDivisionQuestion);
+      GenerateQuestionItem("Division2", divisionDigits, questionsContainer, generateDivisionQuestion);
 
       /*var divisionQuestion1 = generateDivisionQuestion(1);
       divisionQuestion1 = fetchQuestion("div1", divisionQuestion1);
@@ -227,9 +228,9 @@
       setExpired();
 }
 
-function GenerateQuestionItem(key, digit,questionsContainer)
+function GenerateQuestionItem(key, digit,questionsContainer, func)
 {
-    var q = generateMultiplicationQuestion(digit);
+    var q = func(digit);
     q = fetchQuestion(key, q);
     var qElm = createQuestionElement(key, q);
     questionsContainer.appendChild(qElm);
