@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Word Game</title>
+	<style>
+		body {
+			background-color: #1c1c1c;
+			color: #e6e6e6;
+			font-family: Arial, sans-serif;
+			text-align: center;
+		}
+
+		h1 {
+			margin-top: 50px;
+		}
+
+		input[type="text"] {
+			font-size: 24px;
+			margin-top: 20px;
+			padding: 10px;
+			width: 300px;
+			background-color: #2d2d2d;
+			color: #e6e6e6;
+			border: none;
+			border-radius: 5px;
+		}
+
+		input[type="text"]:focus {
+			outline: none;
+			box-shadow: 0 0 5px #4CAF50;
+		}
+
+		button {
+			margin-top: 20px;
+			padding: 10px;
+			font-size: 24px;
+			background-color: #4CAF50;
+			color: #e6e6e6;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		button:hover {
+			background-color: #3e8e41;
+		}
+
+		#result {
+			font-size: 24px;
+			margin-top: 20px;
+		}
+
+		#correctAnswers, #incorrectAnswers {
+			margin-top: 50px;
+			font-size: 24px;
+float: left;
+    padding-left: 10px;
+		}
+
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: inline-block;
+			text-align: left;
+		}
+
+		li {
+			margin: 5px 0;
+			padding: 5px;
+			border-radius: 5px;
+			font-size: 20px;
+			line-height: 1.4;
+		}
+
+		.correct {
+			background-color: #4CAF50;
+			color: #e6e6e6;
+		}
+
+		.incorrect {
+			background-color: #FFCDD2;
+			color: red;
+		}
+	</style>
+</head>
+<body>
+	<h2>Word Game</h2>Listen to the word and enter it below: <div id="word"></div>	
+	<input type="text" id="answer" name="answer" autofocus>
+	<button onclick="checkAnswer()">Submit</button>
+	<div id="result"></div>
+	<div id="correctAnswers">
+		<h4>Correct  |</h4>
+		<ul id="correctList"></ul>
+	</div>
+	<div id="incorrectAnswers">
+		<h4>Incorrect </h4>
+		<ul id="incorrectList"></ul>
+	</div>
+
+	<script>
+		var words = ["apple", "banana", "cherry", "orange", "pear"];
+		var currentWordIndex = 0;
+		var numWords = 0;
+		var correctAnswers = [];
+		var incorrectAnswers = [];
+
+		function speakWord(word) {
+			var msg = new SpeechSynthesisUtterance(word);
+			window.speechSynthesis.speak(msg);
+			var char = word.charAt(0);
+document.getElementById("word").innerText = char + "****";
+		}
+
+		function displayWord() {
+			speakWord(words[currentWordIndex]);
+			
+			if (currentWordIndex >= words.length) {
+				currentWordIndex = 0;
+				numWords++;
+			}
+			if (numWords < 5) {
+				setTimeout(displayWord, 1000);
+			}
+		}
+
+		function updateAnswers() {
+			var correctList = document.getElementById("correctList");
+			var incorrectList = document.getElementById("incorrectList");
+			correctList.innerHTML = "";
+			incorrectList.innerHTML = "";
+			for (var i = 0; i < correctAnswers.length; i++) {
+				var li = document.createElement("li");
+				li.innerHTML = correctAnswers[i];
+				li.className= "correct";
+				correctList.appendChild(li);
+			}
+			for (var i = 0; i < incorrectAnswers.length; i++) {
+				var li = document.createElement("li");
+				li.innerHTML = incorrectAnswers[i];
+				li.className = "incorrect";
+				incorrectList.appendChild(li);
+			}
+		}
+
+		function checkAnswer() {
+			currentWordIndex++;
+			var userAnswer = document.getElementById("answer").value.toLowerCase();
+			var correctAnswer = words[currentWordIndex - 1].toLowerCase();
+			if (userAnswer == correctAnswer) {
+				document.getElementById("result").innerHTML = "Correct!";
+				correctAnswers.push(userAnswer);
+			} else {
+				document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex - 1] + ".";
+				incorrectAnswers.push(userAnswer);
+			}
+			updateAnswers();
+			document.getElementById("answer").value = "";
+		}
+
+		document.getElementById("answer").addEventListener("keydown", function(event) {
+			if (event.keyCode === 13) {
+				event.preventDefault();
+				checkAnswer();
+			}
+		});
+
+		displayWord();
+	</script>
+</body>
+</html>
