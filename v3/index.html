@@ -117,6 +117,8 @@
 
 		function speakWord(word) {
 			var msg = new SpeechSynthesisUtterance(word);
+			msg.rate = 0;
+			//msg.pitch = 0;
 			window.speechSynthesis.speak(msg);
 			var char = word.charAt(0);
 			document.getElementById("word").innerText = char + "**** (" + count + ")";
@@ -154,20 +156,28 @@
 		  
 
 		  processWord = () => {
-			if (count >= 6) { 
-			  clearInterval(intervalId);
-			  return;
-			}
+		  
+			setTimeout(function() {
+			  
+						if (count >= 4) { 
+				  clearInterval(intervalId);
+				  return;
+				}
 
-			const currentWord = words[currentWordIndex];
-			
-			console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
-			speakWord(words[currentWordIndex]);
-			
-			//currentWordIndex = (currentWordIndex + 1) % words.length;
-			clearInterval(intervalId);
-			intervalId = setInterval(processWord, 1800);
-			count++;
+				const currentWord = words[currentWordIndex];
+				
+				console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
+				
+				speakWord(words[currentWordIndex]);			
+				
+				//currentWordIndex = (currentWordIndex + 1) % words.length;
+				clearInterval(intervalId);
+				intervalId = setInterval(processWord, 2000);
+				count++;
+			  
+			  
+			  }, 500);		  
+
 		  };
 
 		  //intervalId = setInterval(processWord, 1500);
