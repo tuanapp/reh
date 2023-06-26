@@ -93,8 +93,10 @@
 	<h2>Word Game</h2>Listen to the word and enter it below: <div id="word"></div>
 	
 	
-	<input type="text" id="answer" name="answer" autofocus>
+	<button onclick="readWord()">Read</button>
+	<input type="text" id="answer_dic" name="answer_dic" autofocus>
 	<button onclick="checkAnswer()">Submit</button>
+	
 	<div id="result"></div>
 	<div id="correctAnswers">
 		<h4>Correct  |</h4>
@@ -107,7 +109,7 @@
 
 	<script>	
 	
-		var words = ["apple", "banana", "cherry", "orange", "pear"];
+		var words = []; //["apple", "banana", "cherry", "orange", "pear"];
 		var currentWordIndex = 0;
 		var numWords = 0;
 		var correctAnswers = [];
@@ -117,10 +119,77 @@
 			var msg = new SpeechSynthesisUtterance(word);
 			window.speechSynthesis.speak(msg);
 			var char = word.charAt(0);
-			document.getElementById("word").innerText = char + "****";
+			document.getElementById("word").innerText = char + "**** (" + count + ")";
+		}
+		
+		
+
+		/*let count = 0;
+		function processWords() {
+		
+			if(words.length != 0)
+			{			
+				const intervalId = setInterval(() => {
+				  if (count > 5) {
+					clearInterval(intervalId); // stop the loop after processing the word 5 times
+					return;
+				  }
+				  
+				  speakWord(words[currentWordIndex]);
+				  count++;
+				  processWords();
+				}, 1000);
+			}
+		}
+*/
+
+		//let readTimes = 0;
+
+		let count = 0;
+		let processWord = null;
+		let intervalId = null;
+		function processWords() {
+		  //let currentIndex = 0;
+		  
+		  
+
+		  processWord = () => {
+			if (count >= 6) { 
+			  clearInterval(intervalId);
+			  return;
+			}
+
+			const currentWord = words[currentWordIndex];
+			
+			console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
+			speakWord(words[currentWordIndex]);
+			
+			//currentWordIndex = (currentWordIndex + 1) % words.length;
+			clearInterval(intervalId);
+			intervalId = setInterval(processWord, 1800);
+			count++;
+		  };
+
+		  //intervalId = setInterval(processWord, 1500);
+
+		  return {
+		    start: () => processWord(),
+			stop: () => clearInterval(intervalId),
+			next: () => {
+			  clearInterval(intervalId);
+			  count = 0;
+			  processWord();
+			},
+		  };
+		}
+		
+		//for manual button
+		function readWord(){
+			speakWord(words[currentWordIndex]);
 		}
 
-		function displayWord() {
+
+		/*function displayWord() {
 			speakWord(words[currentWordIndex]);
 			
 			if (currentWordIndex >= words.length) {
@@ -130,7 +199,7 @@
 			if (numWords < 5) {
 				setTimeout(displayWord, 1000);
 			}
-		}
+		}*/
 
 		function updateAnswers() {
 			var correctList = document.getElementById("correctList");
@@ -152,32 +221,43 @@
 		}
 
 		function checkAnswer() {
-			currentWordIndex++;
-			var userAnswer = document.getElementById("answer").value.toLowerCase();
-			var correctAnswer = words[currentWordIndex - 1].toLowerCase();
+			
+			processWords().stop();
+			
+			var userAnswer = document.getElementById("answer_dic").value.toLowerCase();
+			var correctAnswer = words[currentWordIndex].toLowerCase();
 			if (userAnswer == correctAnswer) {
 				document.getElementById("result").innerHTML = "Correct!";
 				correctAnswers.push(userAnswer);
 			} else {
-				document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex - 1] + ".";
-				incorrectAnswers.push(userAnswer);
+				document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";
+				incorrectAnswers.push(userAnswer + " (" + correctAnswer + ")");
 			}
 			updateAnswers();
-			document.getElementById("answer").value = "";
+			document.getElementById("answer_dic").value = "";
+			
+			/*count = 0; currentIteration = 0;
+			
+			processWords();*/
+			
+			currentWordIndex++;
+			processWords().next();
 		}
 
-		document.getElementById("answer").addEventListener("keydown", function(event) {
+		document.getElementById("answer_dic").addEventListener("keydown", function(event) {
 			if (event.keyCode === 13) {
 				event.preventDefault();
 				checkAnswer();
 			}
 		});
 
-		displayWord();
+
+		//displayWord();
+		//processWords();
 
 
 	// Load words from Google Sheets
-	function loadWords() {
+	/*function loadWords() {
 		gapi.client.sheets.spreadsheets.values.get({
 			spreadsheetId: "1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c",
 			range: "Main!B2:B10"
@@ -194,7 +274,7 @@
 		}, function(response) {
 			console.log("Error: " + response.result.error.message);
 		});
-	}	
+	}*/	
 	
 	document.getElementById("word").innerText = "Loading.........";
 	
@@ -206,6 +286,9 @@
     // Assuming the response is an array of strings
     const stringList = data.valueRanges[0].values[0];
 	words = stringList;
+	
+	processWords().start();
+	document.getElementById("answer_dic").click();
     // Do something with the stringList
     console.log(stringList);
   })
