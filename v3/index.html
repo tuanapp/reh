@@ -93,9 +93,7 @@
 
 </head>
 <body>
-    <h2>Word Game v3.1</h2>Listen to the word and enter it below: <div id="word"></div>
-
-
+    <h3>Word Game v3.2</h3>Listen to the word and enter it below: <div id="word"></div>
     <button onclick="readWord()">Read</button>
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
@@ -112,6 +110,12 @@
 
     <script>
 
+// Check if the user is using the Tizen Browser
+if (navigator.userAgent.indexOf('Tizen') !== -1) {
+  console.log('User is using the Tizen Browser');
+  alert('Tizen');
+}
+
         var words = []; //["apple", "banana", "cherry", "orange", "pear"];
         var currentWordIndex = 0;
         var numWords = 0;
@@ -120,16 +124,19 @@
 
         function speakWord(word) {
             var voiceProvider = "default";
+
+
+
             try {
-                voiceProvider = "responsiveVoice";
-                responsiveVoice.speak(word, "UK English Male");
+                
 
                 if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
-                    /*var msg = new SpeechSynthesisUtterance(word);
+                    var msg = new SpeechSynthesisUtterance(word);
                     msg.rate = 0; //msg.pitch = 0;
-                    window.speechSynthesis.speak(msg);*/
+                    window.speechSynthesis.speak(msg);
                 } else if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
-
+                        voiceProvider = "responsiveVoice";
+                    responsiveVoice.speak(word, "UK English Male");
                 } else {
                     voiceProvider = "NONE!";
                 }
