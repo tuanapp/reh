@@ -53,8 +53,8 @@
         }
 
         #correctAnswers, #incorrectAnswers {
-            margin-top: 50px;
-            font-size: 24px;
+            /*margin-top: 50px;*/
+            font-size: 18px;
             float: left;
             padding-left: 10px;
         }
@@ -71,7 +71,7 @@
             margin: 5px 0;
             padding: 5px;
             border-radius: 5px;
-            font-size: 20px;
+            font-size: 15px;
             line-height: 1.4;
         }
 
@@ -93,18 +93,22 @@
 
 </head>
 <body>
-    <h3>Word Game v3.2</h3>Listen to the word and enter it below: <div id="word"></div>
+    <h3>Word Game v3.2</h3>
+    <select id="myDropdown">
+        <option value="">Select an option</option>
+    </select>
+    Listen to the word and enter it below: <div id="word"></div>
     <button onclick="readWord()">Read</button>
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
 
     <div id="result"></div>
     <div id="correctAnswers">
-        <h4>Correct  |</h4>
+        <h6>Correct  |</h6>
         <ul id="correctList"></ul>
     </div>
     <div id="incorrectAnswers">
-        <h4>Incorrect </h4>
+        <h6>Incorrect </h6>
         <ul id="incorrectList"></ul>
     </div>
 
@@ -129,7 +133,7 @@
                         voiceProvider = "responsiveVoice" + "-Tizen";
                         responsiveVoice.speak(word, "UK English Male");
                     }
-                }else if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
+                } else if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
                     var msg = new SpeechSynthesisUtterance(word);
                     msg.rate = 0; //msg.pitch = 0;
                     window.speechSynthesis.speak(msg);
@@ -137,7 +141,7 @@
                     voiceProvider = "NONE!";
                 }
             }
-            catch (err) { 
+            catch (err) {
                 alert(err);
                 document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + " error: " + err;
             }
@@ -187,17 +191,20 @@
                         return;
                     }
 
-                    const currentWord = words[currentWordIndex];
+                    let currentWord = words[currentWordIndex];
+
+                    if (currentWord.startsWith('#')) {
+                        currentWordIndex++;
+                        currentWord = words[currentWordIndex];
+                    }
 
                     console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
-
-                    speakWord(words[currentWordIndex]);
+                    speakWord(currentWord);
 
                     //currentWordIndex = (currentWordIndex + 1) % words.length;
                     clearInterval(intervalId);
                     intervalId = setInterval(processWord, 2000);
                     count++;
-
 
                 }, 500);
 
@@ -285,6 +292,7 @@
         });
 
 
+
         //displayWord();
         //processWords();
 
@@ -320,6 +328,8 @@
                 const stringList = data.valueRanges[0].values[0];
                 words = stringList;
 
+                setupDropdown();
+
                 processWords().start();
                 document.getElementById("answer_dic").click();
                 // Do something with the stringList
@@ -330,7 +340,41 @@
                 console.error('Error:', error);
             });
 
+        function setupDropdown() {
 
+            //populate dropdown
+            const dropdown = document.getElementById('myDropdown');
+            for (let i = 0; i < words.length; i++) {
+                const item = words[i];
+                if (item.startsWith('#')) {
+                    const option = document.createElement('option');
+                    option.text = item;
+                    option.value = item;
+                    dropdown.add(option);
+                }
+            }
+
+            dropdown.addEventListener('change', function () {
+                const selectedValue = dropdown.value;
+                const selectedIndex = dropdown.selectedIndex;
+                const options = dropdown.options;
+
+                // Remove all words before the selected option
+                const selectedWordIndex = words.findIndex(word => word === selectedValue);
+                words.splice(0, selectedWordIndex);
+
+                // Remove all options before the selected option
+                //for (let i = 0; i < selectedIndex; i++) {
+                //    const option = options[i];
+                //    if (option.value.startsWith('#')) {
+                //        dropdown.remove(i);
+                //        i--;
+                //        selectedIndex--;
+                //    }
+                //}
+            });
+
+        }
     </script>
 
 </body>
