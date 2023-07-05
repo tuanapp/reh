@@ -48,7 +48,7 @@
             }
 
         #result {
-            font-size: 24px;
+            font-size: 20px;
             margin-top: 20px;
         }
 
@@ -84,6 +84,17 @@
             background-color: #FFCDD2;
             color: red;
         }
+
+        #definition {
+            color: yellow;
+            border: white;
+            border-style: double;
+        }
+        #def {
+            /*border: white;
+            border-style: double;*/
+        }
+        #maintitle{ float:left }
     </style>
 
     <script src="https://apis.google.com/js/api.js"></script>
@@ -93,7 +104,7 @@
 
 </head>
 <body>
-    <h3>Word Game v3.2</h3>
+    <div id="maintitle"><h3>Word Game v3.2</h3></div>
     <select id="myDropdown">
         <option value="">Select an option</option>
     </select>
@@ -103,6 +114,13 @@
     <button onclick="checkAnswer()">Submit</button>
 
     <div id="result"></div>
+
+    <div id="def">
+        <div id="definition">
+        </div>
+        <iframe id="definitionFrame" src="" title="def" style="width: 400px;height: 500px; float:right"></iframe>
+    </div>
+
     <div id="correctAnswers">
         <h6>Correct  |</h6>
         <ul id="correctList"></ul>
@@ -111,6 +129,7 @@
         <h6>Incorrect </h6>
         <ul id="incorrectList"></ul>
     </div>
+
 
     <script>
 
@@ -266,11 +285,18 @@
 
             var userAnswer = document.getElementById("answer_dic").value.toLowerCase();
             var correctAnswer = words[currentWordIndex].toLowerCase();
+
+            //show definition
+            getDefinition(correctAnswer);
+
+            let result = document.getElementById("result");
             if (userAnswer == correctAnswer) {
-                document.getElementById("result").innerHTML = "Correct!";
+                result.innerHTML = "Correct!";
+                result.style.color = "green"
                 correctAnswers.push(userAnswer);
             } else {
-                document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";
+                result.innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";
+                result.style.color = "red"
                 incorrectAnswers.push(userAnswer + " (" + correctAnswer + ")");
             }
             updateAnswers();
@@ -286,8 +312,11 @@
 
         document.getElementById("answer_dic").addEventListener("keydown", function (event) {
             if (event.keyCode === 13) {
-                event.preventDefault();
-                checkAnswer();
+                let input = document.getElementById("answer_dic").value;
+                if (input !== "" && input !== " ") {
+                    event.preventDefault();
+                    checkAnswer();
+                }
             }
         });
 
@@ -296,7 +325,7 @@
         //displayWord();
         //processWords();
 
-
+        //OLD
         // Load words from Google Sheets
         /*function loadWords() {
             gapi.client.sheets.spreadsheets.values.get({
@@ -319,6 +348,7 @@
 
         document.getElementById("word").innerText = "Loading.........";
 
+
         fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
             .then(response => response.json())
             .then(data => {
@@ -339,6 +369,7 @@
                 // Handle any errors that occur during the request
                 console.error('Error:', error);
             });
+
 
         function setupDropdown() {
 
@@ -363,18 +394,37 @@
                 const selectedWordIndex = words.findIndex(word => word === selectedValue);
                 words.splice(0, selectedWordIndex);
 
-                // Remove all options before the selected option
-                //for (let i = 0; i < selectedIndex; i++) {
-                //    const option = options[i];
-                //    if (option.value.startsWith('#')) {
-                //        dropdown.remove(i);
-                //        i--;
-                //        selectedIndex--;
-                //    }
-                //}
+                processWords().stop();
+                count = 0;
+                processWords().start();
             });
 
         }
+
+        debugger
+        //Definition related ////////////////////////
+        const apiKey = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
+        const cx = '2644d07aa4a1f41e9';
+
+        function getDefinition(word) {
+
+            let defFrame = document.getElementById("definitionFrame");
+            defFrame.src = `https://www.google.com/search?igu=1&ei=&q=${word}+meaning`
+
+            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${word}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    debugger
+                    const definition = data.items[0].snippet;
+                    let meaning = `definition of ${word}: ${definition}`;
+                    console.log(meaning);
+                    document.getElementById("definition").innerText = meaning;
+                })
+                .catch(error => console.error(error));
+        }
+            //getDefinition('apple');
+
     </script>
 
 </body>
