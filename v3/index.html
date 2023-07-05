@@ -93,7 +93,7 @@
 
 </head>
 <body>
-    <h2>Word Game</h2>Listen to the word and enter it below: <div id="word"></div>
+    <h2>Word Game v3.1</h2>Listen to the word and enter it below: <div id="word"></div>
 
 
     <button onclick="readWord()">Read</button>
@@ -119,26 +119,25 @@
         var incorrectAnswers = [];
 
         function speakWord(word) {
+            var voiceProvider = "default";
+            try {
+                voiceProvider = "responsiveVoice";
+                responsiveVoice.speak(word, "UK English Male");
 
-            let voiceProvider = "default";
+                if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
+                    /*var msg = new SpeechSynthesisUtterance(word);
+                    msg.rate = 0; //msg.pitch = 0;
+                    window.speechSynthesis.speak(msg);*/
+                } else if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
 
-            voiceProvider = "responsiveVoice";
-            responsiveVoice.speak(word, "UK English Male");
-
-            if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
-                /*var msg = new SpeechSynthesisUtterance(word);
-                msg.rate = 0; //msg.pitch = 0;
-                window.speechSynthesis.speak(msg);*/
-            } else if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
-                
-            } else {
-                voiceProvider = "NONE!";
+                } else {
+                    voiceProvider = "NONE!";
+                }
             }
-
-            /*try {
+            catch (err) { 
+                alert(err);
+                document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + " error: " + err;
             }
-            catch (err) {               
-            }*/
 
             //show a hint
             var char = word.charAt(0);
