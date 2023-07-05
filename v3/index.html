@@ -122,13 +122,15 @@
 
             let voiceProvider = "default";
 
+            voiceProvider = "responsiveVoice";
+            responsiveVoice.speak(word, "UK English Male");
+
             if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
-                var msg = new SpeechSynthesisUtterance(word);
+                /*var msg = new SpeechSynthesisUtterance(word);
                 msg.rate = 0; //msg.pitch = 0;
-                window.speechSynthesis.speak(msg);
+                window.speechSynthesis.speak(msg);*/
             } else if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
-                voiceProvider = "responsiveVoice";
-                responsiveVoice.speak(word, "UK English Male");
+                
             } else {
                 voiceProvider = "NONE!";
             }
