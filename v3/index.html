@@ -120,12 +120,14 @@
 
         function speakWord(word) {
 
+            let voiceProvider = "default";
             if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
                 var msg = new SpeechSynthesisUtterance(word);
                 msg.rate = 0;
                 //msg.pitch = 0;
                 window.speechSynthesis.speak(msg);
             } else {
+                voiceProvider = "responsiveVoice";
                 responsiveVoice.speak(word, "UK English Male");
             }
 
@@ -136,7 +138,7 @@
 
             //show a hint
             var char = word.charAt(0);
-            document.getElementById("word").innerText = char + "**** (" + count + ")";
+            document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider;
         }
 
 
