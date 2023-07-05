@@ -1,314 +1,329 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Word Game</title>
-	<style>
-		body {
-			background-color: #1c1c1c;
-			color: #e6e6e6;
-			font-family: Arial, sans-serif;
-			text-align: center;
-		}
+    <meta charset="UTF-8">
+    <title>Word Game</title>
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #e6e6e6;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
 
-		h1 {
-			margin-top: 50px;
-		}
+        h1 {
+            margin-top: 50px;
+        }
 
-		input[type="text"] {
-			font-size: 24px;
-			margin-top: 20px;
-			padding: 10px;
-			width: 300px;
-			background-color: #2d2d2d;
-			color: #e6e6e6;
-			border: none;
-			border-radius: 5px;
-		}
+        input[type="text"] {
+            font-size: 24px;
+            margin-top: 20px;
+            padding: 10px;
+            width: 300px;
+            background-color: #2d2d2d;
+            color: #e6e6e6;
+            border: none;
+            border-radius: 5px;
+        }
 
-		input[type="text"]:focus {
-			outline: none;
-			box-shadow: 0 0 5px #4CAF50;
-		}
+            input[type="text"]:focus {
+                outline: none;
+                box-shadow: 0 0 5px #4CAF50;
+            }
 
-		button {
-			margin-top: 20px;
-			padding: 10px;
-			font-size: 24px;
-			background-color: #4CAF50;
-			color: #e6e6e6;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			transition: background-color 0.3s;
-		}
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 24px;
+            background-color: #4CAF50;
+            color: #e6e6e6;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-		button:hover {
-			background-color: #3e8e41;
-		}
+            button:hover {
+                background-color: #3e8e41;
+            }
 
-		#result {
-			font-size: 24px;
-			margin-top: 20px;
-		}
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
 
-		#correctAnswers, #incorrectAnswers {
-			margin-top: 50px;
-			font-size: 24px;
-			float: left;
-			padding-left: 10px;
-		}
+        #correctAnswers, #incorrectAnswers {
+            margin-top: 50px;
+            font-size: 24px;
+            float: left;
+            padding-left: 10px;
+        }
 
-		ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-			display: inline-block;
-			text-align: left;
-		}
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: inline-block;
+            text-align: left;
+        }
 
-		li {
-			margin: 5px 0;
-			padding: 5px;
-			border-radius: 5px;
-			font-size: 20px;
-			line-height: 1.4;
-		}
+        li {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 20px;
+            line-height: 1.4;
+        }
 
-		.correct {
-			background-color: #4CAF50;
-			color: #e6e6e6;
-		}
+        .correct {
+            background-color: #4CAF50;
+            color: #e6e6e6;
+        }
 
-		.incorrect {
-			background-color: #FFCDD2;
-			color: red;
-		}
-	</style>
-	
-	<script src="https://apis.google.com/js/api.js"></script>	
-	
+        .incorrect {
+            background-color: #FFCDD2;
+            color: red;
+        }
+    </style>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+
+    <!--#approach02 for old browsers https://responsivevoice.org/app/?email=kdx.shaggy%40gmail.com&vgo_ee=AEFExsNcr4yLxSxzlAO39dp3ZG%2FIOixhj0XJ443Cm1uK5bE5%3A6ZZXm8z2Q9wwz7Lk4hzBq4H%2FF836tKtE-->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
+
 </head>
 <body>
-	<h2>Word Game</h2>Listen to the word and enter it below: <div id="word"></div>
-	
-	
-	<button onclick="readWord()">Read</button>
-	<input type="text" id="answer_dic" name="answer_dic" autofocus>
-	<button onclick="checkAnswer()">Submit</button>
-	
-	<div id="result"></div>
-	<div id="correctAnswers">
-		<h4>Correct  |</h4>
-		<ul id="correctList"></ul>
-	</div>
-	<div id="incorrectAnswers">
-		<h4>Incorrect </h4>
-		<ul id="incorrectList"></ul>
-	</div>
+    <h2>Word Game</h2>Listen to the word and enter it below: <div id="word"></div>
 
-	<script>	
-	
-		var words = []; //["apple", "banana", "cherry", "orange", "pear"];
-		var currentWordIndex = 0;
-		var numWords = 0;
-		var correctAnswers = [];
-		var incorrectAnswers = [];
 
-		function speakWord(word) {
-			var msg = new SpeechSynthesisUtterance(word);
-			msg.rate = 0;
-			//msg.pitch = 0;
-			window.speechSynthesis.speak(msg);
-			var char = word.charAt(0);
-			document.getElementById("word").innerText = char + "**** (" + count + ")";
-		}
-		
-		
+    <button onclick="readWord()">Read</button>
+    <input type="text" id="answer_dic" name="answer_dic" autofocus>
+    <button onclick="checkAnswer()">Submit</button>
 
-		/*let count = 0;
-		function processWords() {
-		
-			if(words.length != 0)
-			{			
-				const intervalId = setInterval(() => {
-				  if (count > 5) {
-					clearInterval(intervalId); // stop the loop after processing the word 5 times
-					return;
-				  }
-				  
-				  speakWord(words[currentWordIndex]);
-				  count++;
-				  processWords();
-				}, 1000);
-			}
-		}
+    <div id="result"></div>
+    <div id="correctAnswers">
+        <h4>Correct  |</h4>
+        <ul id="correctList"></ul>
+    </div>
+    <div id="incorrectAnswers">
+        <h4>Incorrect </h4>
+        <ul id="incorrectList"></ul>
+    </div>
+
+    <script>
+
+        var words = []; //["apple", "banana", "cherry", "orange", "pear"];
+        var currentWordIndex = 0;
+        var numWords = 0;
+        var correctAnswers = [];
+        var incorrectAnswers = [];
+
+        function speakWord(word) {
+
+            if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
+                var msg = new SpeechSynthesisUtterance(word);
+                msg.rate = 0;
+                //msg.pitch = 0;
+                window.speechSynthesis.speak(msg);
+            } else {
+                responsiveVoice.speak(word, "UK English Male");
+            }
+
+            /*try {
+            }
+            catch (err) {               
+            }*/
+
+            //show a hint
+            var char = word.charAt(0);
+            document.getElementById("word").innerText = char + "**** (" + count + ")";
+        }
+
+
+
+        /*let count = 0;
+        function processWords() {
+
+            if(words.length != 0)
+            {
+                const intervalId = setInterval(() => {
+                  if (count > 5) {
+                    clearInterval(intervalId); // stop the loop after processing the word 5 times
+                    return;
+                  }
+
+                  speakWord(words[currentWordIndex]);
+                  count++;
+                  processWords();
+                }, 1000);
+            }
+        }
 */
 
-		//let readTimes = 0;
+        //let readTimes = 0;
 
-		let count = 0;
-		let processWord = null;
-		let intervalId = null;
-		function processWords() {
-		  //let currentIndex = 0;
-		  
-		  
-
-		  processWord = () => {
-		  
-			setTimeout(function() {
-			  
-						if (count >= 4) { 
-				  clearInterval(intervalId);
-				  return;
-				}
-
-				const currentWord = words[currentWordIndex];
-				
-				console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
-				
-				speakWord(words[currentWordIndex]);			
-				
-				//currentWordIndex = (currentWordIndex + 1) % words.length;
-				clearInterval(intervalId);
-				intervalId = setInterval(processWord, 2000);
-				count++;
-			  
-			  
-			  }, 500);		  
-
-		  };
-
-		  //intervalId = setInterval(processWord, 1500);
-
-		  return {
-		    start: () => processWord(),
-			stop: () => clearInterval(intervalId),
-			next: () => {
-			  clearInterval(intervalId);
-			  count = 0;
-			  processWord();
-			},
-		  };
-		}
-		
-		//for manual button
-		function readWord(){
-			speakWord(words[currentWordIndex]);
-		}
+        let count = 0;
+        let processWord = null;
+        let intervalId = null;
+        function processWords() {
+            //let currentIndex = 0;
 
 
-		/*function displayWord() {
-			speakWord(words[currentWordIndex]);
-			
-			if (currentWordIndex >= words.length) {
-				currentWordIndex = 0;
-				numWords++;
-			}
-			if (numWords < 5) {
-				setTimeout(displayWord, 1000);
-			}
-		}*/
 
-		function updateAnswers() {
-			var correctList = document.getElementById("correctList");
-			var incorrectList = document.getElementById("incorrectList");
-			correctList.innerHTML = "";
-			incorrectList.innerHTML = "";
-			for (var i = 0; i < correctAnswers.length; i++) {
-				var li = document.createElement("li");
-				li.innerHTML = correctAnswers[i];
-				li.className= "correct";
-				correctList.appendChild(li);
-			}
-			for (var i = 0; i < incorrectAnswers.length; i++) {
-				var li = document.createElement("li");
-				li.innerHTML = incorrectAnswers[i];
-				li.className = "incorrect";
-				incorrectList.appendChild(li);
-			}
-		}
+            processWord = () => {
 
-		function checkAnswer() {
-			
-			processWords().stop();
-			
-			var userAnswer = document.getElementById("answer_dic").value.toLowerCase();
-			var correctAnswer = words[currentWordIndex].toLowerCase();
-			if (userAnswer == correctAnswer) {
-				document.getElementById("result").innerHTML = "Correct!";
-				correctAnswers.push(userAnswer);
-			} else {
-				document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";
-				incorrectAnswers.push(userAnswer + " (" + correctAnswer + ")");
-			}
-			updateAnswers();
-			document.getElementById("answer_dic").value = "";
-			
-			/*count = 0; currentIteration = 0;
-			
-			processWords();*/
-			
-			currentWordIndex++;
-			processWords().next();
-		}
+                setTimeout(function () {
 
-		document.getElementById("answer_dic").addEventListener("keydown", function(event) {
-			if (event.keyCode === 13) {
-				event.preventDefault();
-				checkAnswer();
-			}
-		});
+                    if (count >= 4) {
+                        clearInterval(intervalId);
+                        return;
+                    }
+
+                    const currentWord = words[currentWordIndex];
+
+                    console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
+
+                    speakWord(words[currentWordIndex]);
+
+                    //currentWordIndex = (currentWordIndex + 1) % words.length;
+                    clearInterval(intervalId);
+                    intervalId = setInterval(processWord, 2000);
+                    count++;
 
 
-		//displayWord();
-		//processWords();
+                }, 500);
+
+            };
+
+            //intervalId = setInterval(processWord, 1500);
+
+            return {
+                start: () => processWord(),
+                stop: () => clearInterval(intervalId),
+                next: () => {
+                    clearInterval(intervalId);
+                    count = 0;
+                    processWord();
+                },
+            };
+        }
+
+        //for manual button
+        function readWord() {
+            speakWord(words[currentWordIndex]);
+        }
 
 
-	// Load words from Google Sheets
-	/*function loadWords() {
-		gapi.client.sheets.spreadsheets.values.get({
-			spreadsheetId: "1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c",
-			range: "Main!B2:B10"
-		}).then(function(response) {
-			var result = response.result;
-			if (result.values.length > 0) {
-				for (var i = 0; i < result.values.length; i++) {
-					words.push(result.values[i][0]);
-				}
-				displayWord();
-			} else {
-				console.log("No data found.");
-			}
-		}, function(response) {
-			console.log("Error: " + response.result.error.message);
-		});
-	}*/	
-	
-	document.getElementById("word").innerText = "Loading.........";
-	
-	fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
-  .then(response => response.json())
-  .then(data => {
-  
-  debugger
-    // Assuming the response is an array of strings
-    const stringList = data.valueRanges[0].values[0];
-	words = stringList;
-	
-	processWords().start();
-	document.getElementById("answer_dic").click();
-    // Do something with the stringList
-    console.log(stringList);
-  })
-  .catch(error => {
-    // Handle any errors that occur during the request
-    console.error('Error:', error);
-  });
+        /*function displayWord() {
+            speakWord(words[currentWordIndex]);
+
+            if (currentWordIndex >= words.length) {
+                currentWordIndex = 0;
+                numWords++;
+            }
+            if (numWords < 5) {
+                setTimeout(displayWord, 1000);
+            }
+        }*/
+
+        function updateAnswers() {
+            var correctList = document.getElementById("correctList");
+            var incorrectList = document.getElementById("incorrectList");
+            correctList.innerHTML = "";
+            incorrectList.innerHTML = "";
+            for (var i = 0; i < correctAnswers.length; i++) {
+                var li = document.createElement("li");
+                li.innerHTML = correctAnswers[i];
+                li.className = "correct";
+                correctList.appendChild(li);
+            }
+            for (var i = 0; i < incorrectAnswers.length; i++) {
+                var li = document.createElement("li");
+                li.innerHTML = incorrectAnswers[i];
+                li.className = "incorrect";
+                incorrectList.appendChild(li);
+            }
+        }
+
+        function checkAnswer() {
+
+            processWords().stop();
+
+            var userAnswer = document.getElementById("answer_dic").value.toLowerCase();
+            var correctAnswer = words[currentWordIndex].toLowerCase();
+            if (userAnswer == correctAnswer) {
+                document.getElementById("result").innerHTML = "Correct!";
+                correctAnswers.push(userAnswer);
+            } else {
+                document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";
+                incorrectAnswers.push(userAnswer + " (" + correctAnswer + ")");
+            }
+            updateAnswers();
+            document.getElementById("answer_dic").value = "";
+
+            /*count = 0; currentIteration = 0;
+
+            processWords();*/
+
+            currentWordIndex++;
+            processWords().next();
+        }
+
+        document.getElementById("answer_dic").addEventListener("keydown", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                checkAnswer();
+            }
+        });
 
 
-	</script>	
-	  
+        //displayWord();
+        //processWords();
+
+
+        // Load words from Google Sheets
+        /*function loadWords() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: "1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c",
+                range: "Main!B2:B10"
+            }).then(function(response) {
+                var result = response.result;
+                if (result.values.length > 0) {
+                    for (var i = 0; i < result.values.length; i++) {
+                        words.push(result.values[i][0]);
+                    }
+                    displayWord();
+                } else {
+                    console.log("No data found.");
+                }
+            }, function(response) {
+                console.log("Error: " + response.result.error.message);
+            });
+        }*/
+
+        document.getElementById("word").innerText = "Loading.........";
+
+        fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
+            .then(response => response.json())
+            .then(data => {
+
+                debugger
+                // Assuming the response is an array of strings
+                const stringList = data.valueRanges[0].values[0];
+                words = stringList;
+
+                processWords().start();
+                document.getElementById("answer_dic").click();
+                // Do something with the stringList
+                console.log(stringList);
+            })
+            .catch(error => {
+                // Handle any errors that occur during the request
+                console.error('Error:', error);
+            });
+
+
+    </script>
+
 </body>
 </html>
