@@ -95,6 +95,7 @@
             border-style: double;*/
         }
         #maintitle{ float:left }
+        #word{ font-size: 12px; }
     </style>
 
     <script src="https://apis.google.com/js/api.js"></script>
@@ -118,7 +119,7 @@
     <div id="def">
         <div id="definition">
         </div>
-        <iframe id="definitionFrame" src="" title="def" style="width: 400px;height: 500px; float:right"></iframe>
+        <iframe id="definitionFrame" src="" title="def" style="width: 70%;height: 500px; float:right"></iframe>
     </div>
 
     <div id="correctAnswers">
@@ -130,12 +131,11 @@
         <ul id="incorrectList"></ul>
     </div>
 
-
     <script>
 
-
-
         var words = []; //["apple", "banana", "cherry", "orange", "pear"];
+        var apiCallRequests = 0;
+        var responsiveVoice_apiRequests = 0;
         var currentWordIndex = 0;
         var numWords = 0;
         var correctAnswers = [];
@@ -150,24 +150,26 @@
                     console.log('User is using the Tizen Browser'); //alert('Tizen');
                     if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
                         voiceProvider = "responsiveVoice" + "-Tizen";
+                        responsiveVoice_apiRequests++;
                         responsiveVoice.speak(word, "UK English Male");
                     }
                 } else if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
                     var msg = new SpeechSynthesisUtterance(word);
                     msg.rate = 0; //msg.pitch = 0;
-                    window.speechSynthesis.speak(msg);
+                    window.speechSynthesis.speak(msg);                    
                 } else {
                     voiceProvider = "NONE!";
                 }
             }
             catch (err) {
+                responsiveVoice_apiRequests--;
                 alert(err);
                 document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + " error: " + err;
             }
 
             //show a hint
             var char = word.charAt(0);
-            document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider;
+            document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests}`;
         }
 
 
@@ -198,8 +200,6 @@
         let intervalId = null;
         function processWords() {
             //let currentIndex = 0;
-
-
 
             processWord = () => {
 
@@ -283,8 +283,8 @@
 
             processWords().stop();
 
-            var userAnswer = document.getElementById("answer_dic").value.toLowerCase();
-            var correctAnswer = words[currentWordIndex].toLowerCase();
+            var userAnswer = document.getElementById("answer_dic").value; //.toLowerCase();
+            var correctAnswer = words[currentWordIndex];//.toLowerCase();
 
             //show definition
             getDefinition(correctAnswer);
@@ -348,8 +348,9 @@
 
         document.getElementById("word").innerText = "Loading.........";
 
+        setTimeout(function () {
 
-        fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
+            fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
             .then(response => response.json())
             .then(data => {
 
@@ -369,6 +370,8 @@
                 // Handle any errors that occur during the request
                 console.error('Error:', error);
             });
+
+        }, 2000);
 
 
         function setupDropdown() {
@@ -408,16 +411,17 @@
 
         function getDefinition(word) {
 
+            let q = `${word} meaning`;
             let defFrame = document.getElementById("definitionFrame");
-            defFrame.src = `https://www.google.com/search?igu=1&ei=&q=${word}+meaning`
+            defFrame.src = `https://www.google.com/search?igu=1&ei=&q=${q}`
 
-            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${word}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
+            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     debugger
                     const definition = data.items[0].snippet;
-                    let meaning = `definition of ${word}: ${definition}`;
+                    let meaning = `Definition: ${definition}`;
                     console.log(meaning);
                     document.getElementById("definition").innerText = meaning;
                 })
