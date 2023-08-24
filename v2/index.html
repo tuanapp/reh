@@ -84,13 +84,25 @@ body {
 	<button onclick="checkAnswer()">Submit</button>
 	<div id="result"></div>
 	<div id="score">0</div>
-	<div id="timer">Time: 0s</div>
+	Time:<div id="timer"></div> s
+	<button class="btn clear" onclick="reset()">Clear</button>
+	<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
+	<div id="history"></div> 
 
 	<script>
 		var score = 0;
 		var numQuestions = 0;
 		var numCorrect = 0;
 		var startTime = new Date().getTime();
+		var incorrectQuestions = []; // Array to store incorrect questions
+
+		debugger
+		var answerHistory = [];
+		var storedHistory = localStorage.getItem("history");
+		// Check if storedHistory is not null or undefined
+		if (storedHistory) {
+			answerHistory = JSON.parse(storedHistory);
+		}
 
 		function generateProblem() {
 			var x = Math.floor(Math.random() * 4) + 6; // Generate a random number between 6 and 9
@@ -112,14 +124,35 @@ body {
 				numCorrect++;
 			} else {
 				document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
+				incorrectQuestions.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
+				answerHistory.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
 			}
 			numQuestions++;
 			document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
 			setTimeout(generateProblem, 1000);
 
-			// Calculate elapsed time and update timer
-			var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
-			document.getElementById("timer").innerHTML = "Time: " + elapsedTime + "s";
+			debugger
+					
+					// Display incorrect questions in the div
+					var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
+					incorrectQuestionsDiv.innerHTML = "<h2>Incorrect Questions:</h2>";
+					for (var i = 0; i < incorrectQuestions.length; i++) {
+						var question = document.createElement("p");
+						question.textContent = incorrectQuestions[i];
+						incorrectQuestionsDiv.appendChild(question);
+					}
+					
+					// Store incorrect questions in local storage
+					localStorage.setItem("history", JSON.stringify(answerHistory));
+					// Display incorrect questions in the div
+					var incorrectQuestionsDiv = document.getElementById("history");
+					incorrectQuestionsDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
+					answerHistory.forEach(element => {
+						var question = document.createElement("p");
+						question.textContent = element;
+						incorrectQuestionsDiv.appendChild(question);
+					});
+
 		}
 		
 		document.getElementById("answer").addEventListener("keydown", function(event) {
@@ -130,6 +163,30 @@ body {
 		});
 		
 		generateProblem();
+
+		// Update timer every second
+		clearInterval(timerInterval);
+		updateTimer();
+		var timerInterval = setInterval(updateTimer, 1000);
+
+		function updateTimer()
+		{
+			var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
+			document.getElementById("timer").innerHTML = elapsedTime;
+
+			//document.getElementById("answer").disabled = true;
+			if(parseInt(document.getElementById("timer").innerText) > 100)
+			{
+				document.getElementById("answer").disabled = true;
+				document.getElementById("answer").style.background = "red";
+			}
+		}
+
+		/* storage machanism */
+		function reset() {
+			debugger
+			localStorage.removeItem('history');
+		}
 	</script>
 </body>
 </html>
