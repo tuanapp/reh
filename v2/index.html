@@ -118,12 +118,15 @@ body {
 			var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
 			var y = parseInt(document.getElementById("problem").innerHTML.split(" ")[2]);
 			var correctAnswer = x * y;
+			let obj = document.getElementById("result");
 			if (userAnswer == correctAnswer) {
-				document.getElementById("result").innerHTML = "Correct!";
+				obj.innerHTML = "Correct!";
+				obj.style.color = "green"
 				score++;
 				numCorrect++;
-			} else {
-				document.getElementById("result").innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
+			} else {				
+				obj.innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
+				obj.style.color = "red"
 				incorrectQuestions.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
 				answerHistory.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
 			}
