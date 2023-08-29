@@ -17,7 +17,7 @@ body {
 
 		#problem {
 			font-size: 48px;
-			margin-top: 50px;
+			margin-top: 20px;
 		}
 
 		input[type="number"] {
@@ -77,13 +77,18 @@ body {
 	</style>
 </head>
 <body>
-	<h1>Multiplication Game</h1>
-	<p>Enter the correct answer for each multiplication problem:</p>
+	<div style="float:left">
+		<h3>Multiplication Game</h3><span>Enter the correct answer for each multiplication problem:</span>
+	</div>
+	
 	<div id="problem"></div>
 	<input type="number" id="answer" name="answer" autofocus>
 	<button onclick="checkAnswer()">Submit</button>
 	<div id="result"></div>
 	<div id="score">0</div>
+
+	<div id="motivation"></div>
+
 	Time:<div id="timer"></div> s
 	<button class="btn clear" onclick="reset()">Clear</button>
 	<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
@@ -95,6 +100,23 @@ body {
 		var numCorrect = 0;
 		var startTime = new Date().getTime();
 		var incorrectQuestions = []; // Array to store incorrect questions
+
+        var motivationImages = [
+            // Add URLs of motivation images here
+            "https://thumbs.dreamstime.com/z/vector-good-job-symbol-29548614.jpg",
+            "https://media.tenor.com/Trxl3FfZoIAAAAAC/very-good.gif",
+            "https://cdn.quotesgram.com/img/96/84/209882752-star-great-job.jpg",
+            // ...
+		];
+        function displayMotivationImage() {
+            var randomIndex = Math.floor(Math.random() * motivationImages.length);
+            var imageUrl = motivationImages[randomIndex];
+            var imgElement = document.createElement("img");
+			imgElement.src = imageUrl;
+			imgElement.style.maxWidth = '100px';
+			var mot = document.getElementById('motivation');
+            mot.appendChild(imgElement);
+        }
 
 		debugger
 		var answerHistory = [];
@@ -115,47 +137,49 @@ body {
 
 		function checkAnswer() {
 			var userAnswer = document.getElementById("answer").value;
-			var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
-			var y = parseInt(document.getElementById("problem").innerHTML.split(" ")[2]);
-			var correctAnswer = x * y;
-			let obj = document.getElementById("result");
-			if (userAnswer == correctAnswer) {
-				obj.innerHTML = "Correct!";
-				obj.style.color = "green"
-				score++;
-				numCorrect++;
-			} else {				
-				obj.innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
-				obj.style.color = "red"
-				incorrectQuestions.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
-				answerHistory.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
+
+			if (userAnswer !== "") {
+                var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
+                var y = parseInt(document.getElementById("problem").innerHTML.split(" ")[2]);
+                var correctAnswer = x * y;
+                let obj = document.getElementById("result");
+                if (userAnswer == correctAnswer) {
+                    obj.innerHTML = "Correct!";
+                    obj.style.color = "green"
+                    score++;
+                    numCorrect++;
+                } else {
+                    obj.innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
+                    obj.style.color = "red"
+                    incorrectQuestions.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
+                    answerHistory.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
+                }
+                numQuestions++;
+                document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
+                setTimeout(generateProblem, 500);
+
+                debugger
+
+                // Display incorrect questions in the div
+                var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
+                incorrectQuestionsDiv.innerHTML = "<h2>Incorrect Questions:</h2>";
+                for (var i = 0; i < incorrectQuestions.length; i++) {
+                    var question = document.createElement("p");
+                    question.textContent = incorrectQuestions[i];
+                    incorrectQuestionsDiv.appendChild(question);
+                }
+
+                // Store incorrect questions in local storage
+                localStorage.setItem("history", JSON.stringify(answerHistory));
+                // Display incorrect questions in the div
+                var incorrectQuestionsDiv = document.getElementById("history");
+                incorrectQuestionsDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
+                answerHistory.forEach(element => {
+                    var question = document.createElement("p");
+                    question.textContent = element;
+                    incorrectQuestionsDiv.appendChild(question);
+                });
 			}
-			numQuestions++;
-			document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
-			setTimeout(generateProblem, 1000);
-
-			debugger
-					
-					// Display incorrect questions in the div
-					var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
-					incorrectQuestionsDiv.innerHTML = "<h2>Incorrect Questions:</h2>";
-					for (var i = 0; i < incorrectQuestions.length; i++) {
-						var question = document.createElement("p");
-						question.textContent = incorrectQuestions[i];
-						incorrectQuestionsDiv.appendChild(question);
-					}
-					
-					// Store incorrect questions in local storage
-					localStorage.setItem("history", JSON.stringify(answerHistory));
-					// Display incorrect questions in the div
-					var incorrectQuestionsDiv = document.getElementById("history");
-					incorrectQuestionsDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
-					answerHistory.forEach(element => {
-						var question = document.createElement("p");
-						question.textContent = element;
-						incorrectQuestionsDiv.appendChild(question);
-					});
-
 		}
 		
 		document.getElementById("answer").addEventListener("keydown", function(event) {
@@ -178,10 +202,14 @@ body {
 			document.getElementById("timer").innerHTML = elapsedTime;
 
 			//document.getElementById("answer").disabled = true;
-			if(parseInt(document.getElementById("timer").innerText) > 100)
+            if (parseInt(document.getElementById("timer").innerText) > 100 && document.getElementById("answer").style.background != "red") //100 - 10
 			{
 				document.getElementById("answer").disabled = true;
 				document.getElementById("answer").style.background = "red";
+				
+                if (score > 12) { //12 - 1
+                    displayMotivationImage();
+                }
 			}
 		}
 
