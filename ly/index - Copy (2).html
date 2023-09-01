@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tamil Lyrics Search</title>
+</head>
+<body>
+  <h1>Tamil Lyrics Search</h1>
+  <input type="text" id="keywordInput" placeholder="Enter keyword">
+  <button id="searchButton">Search</button>
+  <button id="bookmarkButton">Bookmark</button>
+  <button id="viewBookmarksButton">View Bookmarks</button>
+  <div id="bookmarksContainer" style="display: none;">
+    <h2>Bookmarks</h2>
+    <ul id="bookmarksList"></ul>
+  </div>
+  <div id="pageContent"></div>
+
+  <script>
+    // API credentials
+        var apiKey = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
+        var cx = '129c3cc02c8e24f02'; //lyric - YOUR_CUSTOM_SEARCH_ENGINE_ID
+
+    // Event listeners
+    document.getElementById('searchButton').addEventListener('click', searchKeywords);
+    document.getElementById('keywordInput').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        searchKeywords();
+      }
+    });
+    document.getElementById('bookmarkButton').addEventListener('click', bookmarkPage);
+    document.getElementById('viewBookmarksButton').addEventListener('click', toggleBookmarks);
+
+    // Perform search and load page
+    function searchKeywords() {
+      const keyword = document.getElementById('keywordInput').value.trim();
+      if (keyword !== '') {
+        const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(keyword)}`;
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            if (data.items && data.items.length > 0) {
+              const firstResultUrl = data.items[0].link;
+              if (firstResultUrl.includes('www.tamil2lyrics.com')) {
+                loadPage(firstResultUrl);
+              } else {
+                console.log('No Tamil2Lyrics page found. Loading first result instead.');
+                loadPage(data.items[0].link);
+              }
+            } else {
+              console.log('No search results found.');
+            }
+          })
+          .catch(error => console.error('Error occurred during search:', error));
+      }
+    }
+
+    // Load page
+    function loadPage(url) {
+      console.log('Loading page:', url);
+      fetch(url)
+        .then(response => response.text())
+        .then(htmlContent => {
+          document.getElementById('pageContent').innerHTML = htmlContent;
+        })
+        .catch(error => console.error('Error occurred while loading page:', error));
+    }
+
+    // Bookmark the page and store in localStorage
+    function bookmarkPage() {
+      const url = window.location.href;
+      const htmlContent = document.documentElement.outerHTML;
+      localStorage.setItem(url, htmlContent);
+      console.log('Page bookmarked and stored in localStorage.');
+    }
+
+    // Toggle visibility of bookmarks
+    function toggleBookmarks() {
+      const bookmarksContainer = document.getElementById('bookmarksContainer');
+      bookmarksContainer.style.display = bookmarksContainer.style.display === 'none' ? 'block' : 'none';
+      if (bookmarksContainer.style.display === 'block') {
+        renderBookmarks();
+      }
+    }
+
+    // Render bookmarks
+    function renderBookmarks() {
+      const bookmarksList = document.getElementById('bookmarksList');
+      bookmarksList.innerHTML = '';
+      for (let i = 0; i < localStorage.length; i++) {
+        const url = localStorage.key(i);
+        const bookmarkItem = document.createElement('li');
+        const bookmarkLink = document.createElement('a');
+        bookmarkLink.href = '#';
+        bookmarkLink.textContent = url;
+        bookmarkLink.addEventListener('click', function() {
+          loadPageFromLocalStorage(url);
+        });
+        bookmarkItem.appendChild(bookmarkLink);
+        bookmarksList.appendChild(bookmarkItem);
+      }
+    }
+
+    // Load page from localStorage
+    function loadPageFromLocalStorage(url) {
+      const htmlContent = localStorage.getItem(url);
+      if (htmlContent) {
+        document.getElementById('pageContent').innerHTML = htmlContent;
+        console.log('Page loaded from localStorage:', url);
+      } else {
+        console.log('Page not found in localStorage:', url);
+      }
+    }
+  </script>
+</body>
+</html>

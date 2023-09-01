@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tamil Song Lyrics Search</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Function to handle the search
+      function searchKeywords() {
+        var keywords = document.getElementById("searchInput").value + " lyrics";
+        var apiKey = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
+        var cx = '129c3cc02c8e24f02'; //lyric - YOUR_CUSTOM_SEARCH_ENGINE_ID
+        var googleSearchUrl = "https://www.googleapis.com/customsearch/v1?key=" + apiKey + "&cx=" + cx + "&q=" + encodeURIComponent(keywords);
+
+        // Send an AJAX request to the Google Custom Search API
+        $.ajax({
+          url: googleSearchUrl,
+          type: "GET",
+          success: function(response) {
+            var items = response.items;
+
+            if (items && items.length > 0) {
+              var tamil2LyricsPage = items.find(function(item) {
+                return item.link.includes("https://www.tamil2lyrics.com");
+              });
+
+              if (tamil2LyricsPage) {
+                var pageUrl = tamil2LyricsPage.link;
+                loadPage(pageUrl);
+              } else {
+                var firstResultUrl = items[0].link;
+                loadPage(firstResultUrl);
+              }
+            } else {
+              alert("No search results found.");
+            }
+          },
+          error: function() {
+            alert("Error occurred while searching.");
+          }
+        });
+      }
+
+      // Function to load the page
+      function loadPage(url) {
+        // Load the page in an iframe
+        var iframe = document.getElementById("pageFrame");
+        iframe.src = url;
+      }
+
+      // Function to bookmark the page
+      function bookmarkPage() {
+        var iframe = document.getElementById("pageFrame");
+        var bookmarkUrl = iframe.src;
+
+        // Save the bookmark URL to local storage
+        localStorage.setItem("bookmark", bookmarkUrl);
+        alert("Page bookmarked successfully.");
+      }
+
+      // Function to check if a bookmark exists and load it
+      function loadBookmark() {
+        var bookmarkUrl = localStorage.getItem("bookmark");
+        if (bookmarkUrl) {
+          loadPage(bookmarkUrl);
+        }
+      }
+
+      // Function to search bookmarks
+      function searchBookmarks() {
+        var searchKeywords = document.getElementById("bookmarkSearchInput").value.toLowerCase();
+        var bookmarkUrl = localStorage.getItem("bookmark");
+
+        if (bookmarkUrl && bookmarkUrl.toLowerCase().includes(searchKeywords)) {
+          loadPage(bookmarkUrl);
+        } else {
+          alert("No bookmark found.");
+        }
+      }
+
+      // Event listener for search button
+      document.getElementById("searchButton").addEventListener("click", searchKeywords);
+
+      // Event listener for enter key press
+      document.getElementById("searchInput").addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          searchKeywords();
+        }
+      });
+
+      // Event listener for bookmark button
+      document.getElementById("bookmarkButton").addEventListener("click", bookmarkPage);
+
+      // Event listener for load bookmark button
+      document.getElementById("loadBookmarkButton").addEventListener("click", loadBookmark);
+
+      // Event listener for search bookmarks button
+      document.getElementById("searchBookmarkButton").addEventListener("click", searchBookmarks);
+    });
+  </script>
+</head>
+<body>
+  <h1>Tamil Song Lyrics Search</h1>
+  <input type="text" id="searchInput" placeholder="Enter keywords">
+  <button id="searchButton">Search</button>
+
+  <br><br>
+
+  <iframe id="pageFrame" src="" width="100%" height="500"></iframe>
+
+  <br><br>
+
+  <button id="bookmarkButton">Bookmark Page</button>
+  <button id="loadBookmarkButton">Load Bookmark</button>
+
+  <br><br>
+
+  <input type="text" id="bookmarkSearchInput" placeholder="Search bookmarks">
+  <button id="searchBookmarkButton">Search Bookmarks</button>
+</body>
+</html>

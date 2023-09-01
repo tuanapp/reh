@@ -77,23 +77,24 @@ body {
 	</style>
 </head>
 <body>
-	<div style="float:left">
+	<div style="float: left; max-width: 200px; position: absolute">
 		<h3>Multiplication Game</h3><span>Enter the correct answer for each multiplication problem:</span>
 	</div>
 	
-	<div id="problem"></div>
-	<input type="number" id="answer" name="answer" autofocus>
-	<button onclick="checkAnswer()">Submit</button>
-	<div id="result"></div>
-	<div id="score">0</div>
+	<div>
+		<div id="problem"></div>
+		<input type="number" id="answer" name="answer" autofocus>
+		<button onclick="checkAnswer()">Submit</button>
+		<div id="result"></div>
+		<div id="score">0</div>
 
-	<div id="motivation"></div>
+		<div id="motivation"></div>
 
-	Time:<div id="timer"></div> s
-	<button class="btn clear" onclick="reset()">Clear</button>
-	<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
-	<div id="history"></div> 
-
+		Time:<div id="timer"></div> s
+		<button class="btn clear" onclick="reset()">Clear</button>
+		<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
+		<div id="history"></div>
+	</div>
 	<script>
 		var score = 0;
 		var numQuestions = 0;

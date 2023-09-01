@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tamil Lyrics Search</title>
+    <style>
+        #searchInput {
+            width: 300px;
+        }
+        #bookmarkTable {
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        #bookmarkTable th,
+        #bookmarkTable td {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tamil Lyrics Search</h1>
+    <input type="text" id="searchInput" placeholder="Enter keywords">
+    <button id="searchButton">Search</button>
+    <button id="bookmarkButton">Bookmark</button>
+    <button id="viewBookmarksButton">View Bookmarks</button>
+
+    <table id="bookmarkTable"></table>
+    <div id="mainIframeContainer" style="width: -webkit-fill-available; height: 900px;">
+        <iframe id="mainIframe" src="" style="width: inherit; height: inherit;"></iframe>
+    </div>
+    <script>
+        // Function to search for the keywords
+        function searchKeywords() {
+            var keywords = document.getElementById("searchInput").value;
+            if (keywords.trim() !== "") {
+        var apiKey = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
+        var cx = '129c3cc02c8e24f02'; //lyric - YOUR_CUSTOM_SEARCH_ENGINE_ID
+                var searchUrl = "https://www.googleapis.com/customsearch/v1?key=" + apiKey + "&cx=" + cx + "&q=" + encodeURIComponent(keywords);
+
+                fetch(searchUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        var items = data.items;
+                        if (items && items.length > 0) {
+                            var tamil2LyricsUrl = items.find(item => item.link.startsWith("https://www.tamil2lyrics.com"));
+                            if (tamil2LyricsUrl) {
+                                loadPage(tamil2LyricsUrl.link);
+                            } else {
+                                loadPage(items[0].link);
+                            }
+                        }
+                    })
+                    .catch(error => console.log(error));
+            }
+        }
+
+        // Function to load the page in the main iframe
+        function loadPage(url) {
+            var mainIframe = document.getElementById("mainIframe");
+            mainIframe.src = url;
+			
+			var bookmarkTable = document.getElementById("bookmarkTable");
+			bookmarkTable.style.display = 'none';
+        }
+
+        // Function to handle bookmarking
+        function bookmarkPage() {
+            var keywords = document.getElementById("searchInput").value;
+            var url = document.getElementById("mainIframe").src;
+
+            var bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+            var existingBookmark = bookmarks.find(bookmark => bookmark.url === url);
+            if (!existingBookmark) {
+                bookmarks.push({ keywords: keywords, url: url });
+                localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+                alert("Page bookmarked!");
+            } else {
+                alert("Page is already bookmarked!");
+            }
+        }
+
+        // Function to toggle the bookmark view
+        function toggleBookmarkView() {
+            var bookmarkTable = document.getElementById("bookmarkTable");
+            bookmarkTable.innerHTML = "";
+
+            var bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+            bookmarks.sort((a, b) => a.keywords.localeCompare(b.keywords));
+
+            bookmarks.forEach(bookmark => {
+                var row = bookmarkTable.insertRow();
+                //var keywordCell = row.insertCell();
+                var linkCell = row.insertCell();
+
+                //keywordCell.textContent = bookmark.keywords;
+                linkCell.innerHTML = "<a href='javascript:void(0);' onclick='loadPage(\"" + bookmark.url + "\")'>" + bookmark.keywords + "</a>";
+            });
+			bookmarkTable.style.display = 'block';
+        }
+
+        // Event listeners
+        document.getElementById("searchButton").addEventListener("click", searchKeywords);
+        document.getElementById("searchInput").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                searchKeywords();
+            }
+        });
+        document.getElementById("bookmarkButton").addEventListener("click", bookmarkPage);
+        document.getElementById("viewBookmarksButton").addEventListener("click", toggleBookmarkView);
+    </script>
+</body>
+</html>
