@@ -110,7 +110,7 @@
         <option value="">Select an option</option>
     </select>
     Listen to the word and enter it below: <div id="word"></div>
-    <button onclick="readWord()">Read</button>
+    <button id="read" onclick="readWord()">Read</button>
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
 
@@ -244,6 +244,15 @@
 
         //for manual button
         function readWord() {
+            debugger
+            var readBtn = document.getElementById('read');
+            readBtn.setAttribute('disabled', '')
+            readBtn.style.background = 'black';
+            setTimeout(function () {
+                document.getElementById('read').removeAttribute('disabled');
+                readBtn.style.background = '#4CAF50';
+            }, 10000);
+
             speakWord(words[currentWordIndex]);
         }
 
