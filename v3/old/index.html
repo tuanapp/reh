@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Word Game</title>
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #e6e6e6;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 50px;
+        }
+
+        input[type="text"] {
+            font-size: 24px;
+            margin-top: 20px;
+            padding: 10px;
+            width: 300px;
+            background-color: #2d2d2d;
+            color: #e6e6e6;
+            border: none;
+            border-radius: 5px;
+        }
+
+            input[type="text"]:focus {
+                outline: none;
+                box-shadow: 0 0 5px #4CAF50;
+            }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 24px;
+            background-color: #4CAF50;
+            color: #e6e6e6;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            button:hover {
+                background-color: #3e8e41;
+            }
+
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        #correctAnswers, #incorrectAnswers {
+            /*margin-top: 50px;*/
+            font-size: 18px;
+            float: left;
+            padding-left: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: inline-block;
+            text-align: left;
+        }
+
+        li {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .correct {
+            background-color: #4CAF50;
+            color: #e6e6e6;
+        }
+
+        .incorrect {
+            background-color: #FFCDD2;
+            color: red;
+        }
+
+        #definition {
+            color: yellow;
+            border: white;
+            border-style: double;
+        }
+        #def {
+            /*border: white;
+            border-style: double;*/
+        }
+        #maintitle{ float:left }
+        #word{ font-size: 12px; }
+    </style>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+
+    <!--#approach02 for old browsers https://responsivevoice.org/app/?email=kdx.shaggy%40gmail.com&vgo_ee=AEFExsNcr4yLxSxzlAO39dp3ZG%2FIOixhj0XJ443Cm1uK5bE5%3A6ZZXm8z2Q9wwz7Lk4hzBq4H%2FF836tKtE-->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
+
+</head>
+<body>
+    <div id="maintitle"><h3>Word Game v3.2</h3></div>
+    <select id="myDropdown">
+        <option value="">Select an option</option>
+    </select>
+    Listen to the word and enter it below: <div id="word"></div>
+    <button id="read" onclick="readWord()">Read</button>
+    <input type="text" id="answer_dic" name="answer_dic" autofocus>
+    <button onclick="checkAnswer()">Submit</button>
+
+    <div id="result"></div>
+
+    <div id="def">
+        <div id="definition">
+        </div>
+        <iframe id="definitionFrame" src="" title="def" style="width: 70%;height: 500px; float:right"></iframe>
+    </div>
+
+    <div id="correctAnswers">
+        <h6>Correct  |</h6>
+        <ul id="correctList"></ul>
+    </div>
+    <div id="incorrectAnswers">
+        <h6>Incorrect </h6>
+        <ul id="incorrectList"></ul>
+    </div>
+
+    <script>
+
+        var words = []; //["apple", "banana", "cherry", "orange", "pear"];
+        var apiCallRequests = 0;
+        var responsiveVoice_apiRequests = 0;
+        var currentWordIndex = 0;
+        var numWords = 0;
+        var correctAnswers = [];
+        var incorrectAnswers = [];
+
+        function speakWord(word) {
+            var voiceProvider = "default";
+
+            try {
+                // Check if the user is using the Tizen Browser
+                if (navigator.userAgent.indexOf('Tizen') !== -1) {
+                    console.log('User is using the Tizen Browser'); //alert('Tizen');
+                    if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
+                        voiceProvider = "responsiveVoice" + "-Tizen";
+                        responsiveVoice_apiRequests++;
+                        responsiveVoice.speak(word, "UK English Male");
+                    }
+                } else if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
+                    var msg = new SpeechSynthesisUtterance(word);
+                    msg.rate = 0; //msg.pitch = 0;
+                    window.speechSynthesis.speak(msg);                    
+                } else {
+                    voiceProvider = "NONE!";
+                }
+            }
+            catch (err) {
+                responsiveVoice_apiRequests--;
+                alert(err);
+                document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + " error: " + err;
+            }
+
+            //show a hint
+            var char = word.charAt(0);
+            document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests}`;
+        }
+
+
+
+        /*let count = 0;
+        function processWords() {
+
+            if(words.length != 0)
+            {
+                const intervalId = setInterval(() => {
+                  if (count > 5) {
+                    clearInterval(intervalId); // stop the loop after processing the word 5 times
+                    return;
+                  }
+
+                  speakWord(words[currentWordIndex]);
+                  count++;
+                  processWords();
+                }, 1000);
+            }
+        }
+*/
+
+        //let readTimes = 0;
+
+        let count = 0;
+        let processWord = null;
+        let intervalId = null;
+        function processWords() {
+            //let currentIndex = 0;
+
+            processWord = () => {
+
+                setTimeout(function () {
+
+                    if (count >= 4) {
+                        clearInterval(intervalId);
+                        return;
+                    }
+
+                    let currentWord = words[currentWordIndex];
+
+                    if (currentWord.startsWith('#')) {
+                        currentWordIndex++;
+                        currentWord = words[currentWordIndex];
+                    }
+
+                    console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
+                    speakWord(currentWord);
+
+                    //currentWordIndex = (currentWordIndex + 1) % words.length;
+                    clearInterval(intervalId);
+                    intervalId = setInterval(processWord, 2000);
+                    count++;
+
+                }, 500);
+
+            };
+
+            //intervalId = setInterval(processWord, 1500);
+
+            return {
+                start: () => processWord(),
+                stop: () => clearInterval(intervalId),
+                next: () => {
+                    clearInterval(intervalId);
+                    count = 0;
+                    processWord();
+                },
+            };
+        }
+
+        //for manual button
+        function readWord() {
+            debugger
+            var readBtn = document.getElementById('read');
+            readBtn.setAttribute('disabled', '')
+            readBtn.style.background = 'black';
+            setTimeout(function () {
+                document.getElementById('read').removeAttribute('disabled');
+                readBtn.style.background = '#4CAF50';
+            }, 10000);
+
+            speakWord(words[currentWordIndex]);
+        }
+
+
+        /*function displayWord() {
+            speakWord(words[currentWordIndex]);
+
+            if (currentWordIndex >= words.length) {
+                currentWordIndex = 0;
+                numWords++;
+            }
+            if (numWords < 5) {
+                setTimeout(displayWord, 1000);
+            }
+        }*/
+
+        function updateAnswers() {
+            var correctList = document.getElementById("correctList");
+            var incorrectList = document.getElementById("incorrectList");
+            correctList.innerHTML = "";
+            incorrectList.innerHTML = "";
+            for (var i = 0; i < correctAnswers.length; i++) {
+                var li = document.createElement("li");
+                li.innerHTML = correctAnswers[i];
+                li.className = "correct";
+                correctList.appendChild(li);
+            }
+            for (var i = 0; i < incorrectAnswers.length; i++) {
+                var li = document.createElement("li");
+                li.innerHTML = incorrectAnswers[i];
+                li.className = "incorrect";
+                incorrectList.appendChild(li);
+            }
+        }
+
+        function checkAnswer() {
+
+            processWords().stop();
+
+            var userAnswer = document.getElementById("answer_dic").value; //.toLowerCase();
+            var correctAnswer = words[currentWordIndex];//.toLowerCase();
+
+            //show definition
+            getDefinition(correctAnswer);
+
+            let result = document.getElementById("result");
+            if (userAnswer == correctAnswer) {
+                result.innerHTML = "Correct!";
+                result.style.color = "green"
+                correctAnswers.push(userAnswer);
+            } else {
+                result.innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";
+                result.style.color = "red"
+                incorrectAnswers.push(userAnswer + " (" + correctAnswer + ")");
+            }
+            updateAnswers();
+            document.getElementById("answer_dic").value = "";
+
+            /*count = 0; currentIteration = 0;
+
+            processWords();*/
+
+            currentWordIndex++;
+            processWords().next();
+        }
+
+        document.getElementById("answer_dic").addEventListener("keydown", function (event) {
+            if (event.keyCode === 13) {
+                let input = document.getElementById("answer_dic").value;
+                if (input !== "" && input !== " ") {
+                    event.preventDefault();
+                    checkAnswer();
+                }
+            }
+        });
+
+
+
+        //displayWord();
+        //processWords();
+
+        //OLD
+        // Load words from Google Sheets
+        /*function loadWords() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: "1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c",
+                range: "Main!B2:B10"
+            }).then(function(response) {
+                var result = response.result;
+                if (result.values.length > 0) {
+                    for (var i = 0; i < result.values.length; i++) {
+                        words.push(result.values[i][0]);
+                    }
+                    displayWord();
+                } else {
+                    console.log("No data found.");
+                }
+            }, function(response) {
+                console.log("Error: " + response.result.error.message);
+            });
+        }*/
+
+        document.getElementById("word").innerText = "Loading.........";
+
+        setTimeout(function () {
+
+            fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
+            .then(response => response.json())
+            .then(data => {
+
+                debugger
+                // Assuming the response is an array of strings
+                const stringList = data.valueRanges[0].values[0];
+                words = stringList;
+
+                setupDropdown();
+
+                processWords().start();
+                document.getElementById("answer_dic").click();
+                // Do something with the stringList
+                console.log(stringList);
+            })
+            .catch(error => {
+                // Handle any errors that occur during the request
+                console.error('Error:', error);
+            });
+
+        }, 2000);
+
+
+        function setupDropdown() {
+
+            //populate dropdown
+            const dropdown = document.getElementById('myDropdown');
+            for (let i = 0; i < words.length; i++) {
+                const item = words[i];
+                if (item.startsWith('#')) {
+                    const option = document.createElement('option');
+                    option.text = item;
+                    option.value = item;
+                    dropdown.add(option);
+                }
+            }
+
+            dropdown.addEventListener('change', function () {
+                const selectedValue = dropdown.value;
+                const selectedIndex = dropdown.selectedIndex;
+                const options = dropdown.options;
+
+                // Remove all words before the selected option
+                const selectedWordIndex = words.findIndex(word => word === selectedValue);
+                words.splice(0, selectedWordIndex);
+
+                processWords().stop();
+                count = 0;
+                processWords().start();
+            });
+
+        }
+
+        debugger
+        //Definition related ////////////////////////
+        const apiKey = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
+        const cx = '2644d07aa4a1f41e9';
+
+        function getDefinition(word) {
+
+            let q = `${word} meaning`;
+            let defFrame = document.getElementById("definitionFrame");
+            defFrame.src = `https://www.google.com/search?igu=1&ei=&q=${q}`
+
+            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    debugger
+                    const definition = data.items[0].snippet;
+                    let meaning = `Definition: ${definition}`;
+                    console.log(meaning);
+                    document.getElementById("definition").innerText = meaning;
+                })
+                .catch(error => console.error(error));
+        }
+            //getDefinition('apple');
+
+    </script>
+
+</body>
+</html>
