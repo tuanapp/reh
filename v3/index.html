@@ -110,9 +110,12 @@
         <option value="">Select an option</option>
     </select>
     Listen to the word and enter it below: <div id="word"></div>
+    <button id="startBtn" onclick="startProgram()">Start</button>
     <button id="read" onclick="readWord()">Read</button>
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
+    <button onclick="study()">Study</button>
+    <div id="study"></div>
 
     <div id="result"></div>
 
@@ -144,14 +147,24 @@
         function speakWord(word) {
             var voiceProvider = "default";
 
+            //TODO
+            let testTvMode = true;
+            let log = "";
+
             try {
+                let wordEl = document.getElementById("word");
                 // Check if the user is using the Tizen Browser
-                if (navigator.userAgent.indexOf('Tizen') !== -1) {
+                if (navigator.userAgent.indexOf('Tizen') !== -1 || testTvMode) {
                     console.log('User is using the Tizen Browser'); //alert('Tizen');
-                    if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function') {
+                    if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function' || testTvMode) {
                         voiceProvider = "responsiveVoice" + "-Tizen";
                         responsiveVoice_apiRequests++;
+                        debugger
+                        wordEl.innerText += log = "[start]"
                         responsiveVoice.speak(word, "UK English Male");
+                        wordEl.innerText += "[end]"
+                    }else{
+                        voiceProvider = "undefined. something went wrong in Tizen!";
                     }
                 } else if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
                     var msg = new SpeechSynthesisUtterance(word);
@@ -169,7 +182,7 @@
 
             //show a hint
             var char = word.charAt(0);
-            document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests}`;
+            document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests} ${log}`;
         }
 
 
@@ -198,14 +211,15 @@
         let count = 0;
         let processWord = null;
         let intervalId = null;
+        let initialTimeout = null;
         function processWords() {
             //let currentIndex = 0;
 
             processWord = () => {
 
-                setTimeout(function () {
+                initialTimeout = setTimeout(function () {
 
-                    if (count >= 4) {
+                    if (count >= 3) {
                         clearInterval(intervalId);
                         return;
                     }
@@ -236,6 +250,7 @@
                 stop: () => clearInterval(intervalId),
                 next: () => {
                     clearInterval(intervalId);
+                    clearInterval(initialTimeout);
                     count = 0;
                     processWord();
                 },
@@ -256,7 +271,10 @@
             speakWord(words[currentWordIndex]);
         }
 
-
+        function startProgram() {
+            processWords().stop();
+            processWords().start();
+        }
         /*function displayWord() {
             speakWord(words[currentWordIndex]);
 
@@ -286,6 +304,25 @@
                 li.className = "incorrect";
                 incorrectList.appendChild(li);
             }
+        }
+
+        function study(){
+            debugger
+            let std = document.getElementById("study");
+
+            if(std.innerHTML !== '')
+              {  std.innerHTML = "";  return; }
+ 
+            var ul = document.createElement("div");
+
+            words.map((w)=>{
+                var li = document.createElement("button");
+                li.style = "margin-right: 4px;"
+                li.innerText = w;
+                if(w.indexOf('#') > -1) ul.appendChild(document.createElement("hr"));
+                ul.appendChild(li);
+            })
+            std.appendChild(ul);
         }
 
         function checkAnswer() {
@@ -370,7 +407,7 @@
 
                 setupDropdown();
 
-                processWords().start();
+                //processWords().start();
                 document.getElementById("answer_dic").click();
                 // Do something with the stringList
                 console.log(stringList);
@@ -410,7 +447,7 @@
                 count = 0;
                 processWords().start();
             });
-
+            document.getElementById("word").innerText = "Ready!"
         }
 
         debugger
