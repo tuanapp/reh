@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Word Game</title>
@@ -26,10 +27,10 @@
             border-radius: 5px;
         }
 
-            input[type="text"]:focus {
-                outline: none;
-                box-shadow: 0 0 5px #4CAF50;
-            }
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px #4CAF50;
+        }
 
         button {
             margin-top: 20px;
@@ -43,16 +44,17 @@
             transition: background-color 0.3s;
         }
 
-            button:hover {
-                background-color: #3e8e41;
-            }
+        button:hover {
+            background-color: #3e8e41;
+        }
 
         #result {
             font-size: 20px;
             margin-top: 20px;
         }
 
-        #correctAnswers, #incorrectAnswers {
+        #correctAnswers,
+        #incorrectAnswers {
             /*margin-top: 50px;*/
             font-size: 18px;
             float: left;
@@ -90,12 +92,19 @@
             border: white;
             border-style: double;
         }
+
         #def {
             /*border: white;
             border-style: double;*/
         }
-        #maintitle{ float:left }
-        #word{ font-size: 12px; }
+
+        #maintitle {
+            float: left
+        }
+
+        #word {
+            font-size: 12px;
+        }
     </style>
 
     <script src="https://apis.google.com/js/api.js"></script>
@@ -104,8 +113,11 @@
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
 
 </head>
+
 <body>
-    <div id="maintitle"><h3>Word Game v3.2</h3></div>
+    <div id="maintitle">
+        <h3>Word Game v3.2</h3>
+    </div>
     <select id="myDropdown">
         <option value="">Select an option</option>
     </select>
@@ -114,7 +126,7 @@
     <button id="read" onclick="readWord()">Read</button>
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
-    <button onclick="study()">Study</button>
+    <button id="studyBtn" onclick="study()">Study</button>
     <div id="study"></div>
 
     <div id="result"></div>
@@ -126,7 +138,7 @@
     </div>
 
     <div id="correctAnswers">
-        <h6>Correct  |</h6>
+        <h6>Correct |</h6>
         <ul id="correctList"></ul>
     </div>
     <div id="incorrectAnswers">
@@ -163,13 +175,13 @@
                         wordEl.innerText += log = "[start]"
                         responsiveVoice.speak(word, "UK English Male");
                         wordEl.innerText += "[end]"
-                    }else{
+                    } else {
                         voiceProvider = "undefined. something went wrong in Tizen!";
                     }
                 } else if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
                     var msg = new SpeechSynthesisUtterance(word);
                     msg.rate = 0; //msg.pitch = 0;
-                    window.speechSynthesis.speak(msg);                    
+                    window.speechSynthesis.speak(msg);
                 } else {
                     voiceProvider = "NONE!";
                 }
@@ -306,23 +318,29 @@
             }
         }
 
-        function study(){
+        function study() {
             debugger
             let std = document.getElementById("study");
 
-            if(std.innerHTML !== '')
-              {  std.innerHTML = "";  return; }
- 
+            if (std.innerHTML !== '') {
+                //document.location.reload();
+                std.innerHTML = ""; 
+                document.getElementById("studyBtn").style.visibility = 'hidden';
+                return;
+            }
+
             var ul = document.createElement("div");
 
-            words.map((w)=>{
+            words.map((w) => {
                 var li = document.createElement("button");
                 li.style = "margin-right: 4px;"
                 li.innerText = w;
-                if(w.indexOf('#') > -1) ul.appendChild(document.createElement("hr"));
+                if (w.indexOf('#') > -1) ul.appendChild(document.createElement("hr"));
                 ul.appendChild(li);
             })
             std.appendChild(ul);
+
+            
         }
 
         function checkAnswer() {
@@ -397,25 +415,25 @@
         setTimeout(function () {
 
             fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
-            .then(response => response.json())
-            .then(data => {
+                .then(response => response.json())
+                .then(data => {
 
-                debugger
-                // Assuming the response is an array of strings
-                const stringList = data.valueRanges[0].values[0];
-                words = stringList;
+                    debugger
+                    // Assuming the response is an array of strings
+                    const stringList = data.valueRanges[0].values[0];
+                    words = stringList;
 
-                setupDropdown();
+                    setupDropdown();
 
-                //processWords().start();
-                document.getElementById("answer_dic").click();
-                // Do something with the stringList
-                console.log(stringList);
-            })
-            .catch(error => {
-                // Handle any errors that occur during the request
-                console.error('Error:', error);
-            });
+                    //processWords().start();
+                    document.getElementById("answer_dic").click();
+                    // Do something with the stringList
+                    console.log(stringList);
+                })
+                .catch(error => {
+                    // Handle any errors that occur during the request
+                    console.error('Error:', error);
+                });
 
         }, 2000);
 
@@ -473,9 +491,10 @@
                 })
                 .catch(error => console.error(error));
         }
-            //getDefinition('apple');
+        //getDefinition('apple');
 
     </script>
 
 </body>
+
 </html>
