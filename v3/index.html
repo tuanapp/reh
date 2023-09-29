@@ -156,7 +156,7 @@
         var correctAnswers = [];
         var incorrectAnswers = [];
 
-        function speakWord(word) {
+        function speakWord(word, _rate = 0.4) {
             var voiceProvider = "default";
 
             //TODO
@@ -164,6 +164,10 @@
             let log = "";
 
             try {
+
+                if (_rate < 0.3)
+                    _rate = 0.3;
+
                 let wordEl = document.getElementById("word");
                 // Check if the user is using the Tizen Browser
                 if (navigator.userAgent.indexOf('Tizen') !== -1 || testTvMode) {
@@ -172,9 +176,10 @@
                         voiceProvider = "responsiveVoice" + "-Tizen";
                         responsiveVoice_apiRequests++;
                         debugger
-                        wordEl.innerText += log = "[start]"
-                        responsiveVoice.speak(word, "UK English Male");
-                        wordEl.innerText += "[end]"
+                        wordEl.innerText += log = `[start]${_rate}`
+                        // responsiveVoice.speak(word, "UK English Male", {pitch: 0.75, rate: 0.75});
+                        responsiveVoice.speak(word, "UK English Female", { pitch: 1, rate: _rate });
+                        wordEl.innerText += `[end]${_rate}`
                     } else {
                         voiceProvider = "undefined. something went wrong in Tizen!";
                     }
@@ -226,6 +231,7 @@
         let initialTimeout = null;
         function processWords() {
             //let currentIndex = 0;
+            let rate = 0.6;
 
             processWord = () => {
 
@@ -244,12 +250,14 @@
                     }
 
                     console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
-                    speakWord(currentWord);
-
+                    speakWord(currentWord, rate);
+                    rate = rate - 0.1;
                     //currentWordIndex = (currentWordIndex + 1) % words.length;
                     clearInterval(intervalId);
                     intervalId = setInterval(processWord, 2000);
                     count++;
+                    debugger
+                    
 
                 }, 500);
 
@@ -324,7 +332,7 @@
 
             if (std.innerHTML !== '') {
                 //document.location.reload();
-                std.innerHTML = ""; 
+                std.innerHTML = "";
                 document.getElementById("studyBtn").style.visibility = 'hidden';
                 return;
             }
@@ -340,7 +348,7 @@
             })
             std.appendChild(ul);
 
-            
+
         }
 
         function checkAnswer() {
