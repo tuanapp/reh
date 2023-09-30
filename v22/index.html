@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Multiplication Game 8 & 9</title>
+	<style>
+		body {
+			background-color: #1c1c1c;
+			color: #e6e6e6;
+			font-family: Arial, sans-serif;
+			text-align: center;
+		}
+
+		h1 {
+			margin-top: 50px;
+		}
+
+		#problem {
+			font-size: 48px;
+			margin-top: 20px;
+		}
+
+		input[type="number"] {
+			font-size: 24px;
+			margin-top: 20px;
+			padding: 10px;
+			width: 100px;
+			background-color: #2d2d2d;
+			color: #e6e6e6;
+			border: none;
+			border-radius: 5px;
+		}
+
+		input[type="number"]:focus {
+			outline: none;
+			box-shadow: 0 0 5px #4CAF50;
+		}
+
+		button {
+			margin-top: 20px;
+			padding: 10px;
+			font-size: 24px;
+			background-color: #4CAF50;
+			color: #e6e6e6;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		button:hover {
+			background-color: #3e8e41;
+		}
+
+		#result {
+			font-size: 24px;
+			margin-top: 20px;
+		}
+
+		#score {
+			font-size: 36px;
+			margin-top: 50px;
+			background-color: #2d2d2d;
+			padding: 10px;
+			border-radius: 5px;
+			display: inline-block;
+		}
+
+		#timer {
+			font-size: 24px;
+			margin-top: 20px;
+			display: inline-block;
+			background-color: #2d2d2d;
+			padding: 10px;
+			border-radius: 5px;
+		}
+	</style>
+</head>
+
+<body>
+	<div style="float: left; max-width: 200px; position: absolute">
+		<h3>Multiplication Game</h3><span>Enter the correct answer for each multiplication problem:</span>
+	</div>
+
+	<div>
+		<div id="problem"></div>
+		<input type="number" id="answer" name="answer" autofocus>
+		<button onclick="checkAnswer()">Submit</button>
+		<div id="result"></div>
+		<div id="score">0</div>
+
+		<div id="motivation"></div>
+
+		Time:<div id="timer"></div> s
+		<button class="btn clear" onclick="reset()">Clear</button>
+		<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
+		<div id="history"></div>
+	</div>
+	<script>
+		var score = 0;
+		var numQuestions = 0;
+		var numCorrect = 0;
+		var startTime = new Date().getTime();
+		var incorrectQuestions = []; // Array to store incorrect questions
+
+		var motivationImages = [
+			// Add URLs of motivation images here
+			"https://thumbs.dreamstime.com/z/vector-good-job-symbol-29548614.jpg",
+			"https://media.tenor.com/Trxl3FfZoIAAAAAC/very-good.gif",
+			"https://cdn.quotesgram.com/img/96/84/209882752-star-great-job.jpg",
+			// ...
+		];
+		function displayMotivationImage() {
+			var randomIndex = Math.floor(Math.random() * motivationImages.length);
+			var imageUrl = motivationImages[randomIndex];
+			var imgElement = document.createElement("img");
+			imgElement.src = imageUrl;
+			imgElement.style.maxWidth = '100px';
+			var mot = document.getElementById('motivation');
+			mot.appendChild(imgElement);
+		}
+
+		//debugger
+		var answerHistory = [];
+		var storedHistory = localStorage.getItem("history");
+		// Check if storedHistory is not null or undefined
+		if (storedHistory) {
+			answerHistory = JSON.parse(storedHistory);
+		}
+
+		function setProblem() {
+			var problem = generateProblem();
+			document.getElementById("problem").innerHTML = problem;
+			document.getElementById("answer").value = "";
+			document.getElementById("answer").focus();
+		}
+
+		let startTable = 8;
+		let endTable = 9;
+		var qlist = new Array()
+		for (let i = startTable; i <= endTable; i++) {
+			for (let j = 2; j <= 9; j++) {
+				const result = i * j;
+				//console.log(`${i} x ${j} = ${result}`);
+				qlist.push(`${i} x ${j} = ${result}`)
+			}
+		}
+		console.log(qlist);
+		
+		function generateProblem() {
+			//approach 1: random
+			/*var x = Math.floor(Math.random() * 4) + 6; // Generate a random number between 6 and 9
+			var y = Math.floor(Math.random() * 9) + 2; // Generate a random number between 2 and 10
+			return x + " x " + y + " = ";*/
+			
+			//approach 2: cover a multipication range
+			// Generate a random index
+			const randomIndex = Math.floor(Math.random() * qlist.length);
+			// Remove the item at the random index from the array
+			debugger
+			const removedItem = qlist.splice(randomIndex, 1)[0];
+			return removedItem;
+		}
+
+		function checkAnswer() {
+			var userAnswer = document.getElementById("answer").value;
+
+			if (userAnswer !== "") {
+				var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
+				var y = parseInt(document.getElementById("problem").innerHTML.split(" ")[2]);
+				var correctAnswer = x * y;
+				let obj = document.getElementById("result");
+				if (userAnswer == correctAnswer) {
+					obj.innerHTML = "Correct!";
+					obj.style.color = "green"
+					score++;
+					numCorrect++;
+				} else {
+					obj.innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
+					obj.style.color = "red"
+					incorrectQuestions.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
+					answerHistory.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
+				}
+				numQuestions++;
+				document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
+				setTimeout(setProblem, 500);
+
+				debugger
+
+				// Display incorrect questions in the div
+				var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
+				incorrectQuestionsDiv.innerHTML = "<h2>Incorrect Questions:</h2>";
+				for (var i = 0; i < incorrectQuestions.length; i++) {
+					var question = document.createElement("p");
+					question.textContent = incorrectQuestions[i];
+					incorrectQuestionsDiv.appendChild(question);
+				}
+
+				// Store incorrect questions in local storage
+				localStorage.setItem("history", JSON.stringify(answerHistory));
+				// Display incorrect questions in the div
+				var incorrectQuestionsDiv = document.getElementById("history");
+				incorrectQuestionsDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
+				answerHistory.forEach(element => {
+					var question = document.createElement("p");
+					question.textContent = element;
+					incorrectQuestionsDiv.appendChild(question);
+				});
+			}
+		}
+
+		document.getElementById("answer").addEventListener("keydown", function (event) {
+			if (event.keyCode === 13) {
+				event.preventDefault();
+				checkAnswer();
+			}
+		});
+
+		setProblem();
+
+		// Update timer every second
+		clearInterval(timerInterval);
+		updateTimer();
+		var timerInterval = setInterval(updateTimer, 1000);
+
+		function updateTimer() {
+			var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
+			document.getElementById("timer").innerHTML = elapsedTime;
+
+			//document.getElementById("answer").disabled = true;
+			if (parseInt(document.getElementById("timer").innerText) > 100 && document.getElementById("answer").style.background != "red") //100 - 10
+			{
+				//disable the timer timeout
+				/*
+				document.getElementById("answer").disabled = true;
+				document.getElementById("answer").style.background = "red";
+
+				if (score > 12) { //12 - 1
+					displayMotivationImage();
+				}*/
+			}
+		}
+
+		/* storage machanism */
+		function reset() {
+			debugger
+			localStorage.removeItem('history');
+		}
+	</script>
+</body>
+
+</html>
