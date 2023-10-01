@@ -80,7 +80,8 @@
 
 <body>
 	<div style="float: left; max-width: 200px; position: absolute">
-		<h3>Multiplication Game</h3><span>Enter the correct answer for each multiplication problem:</span>
+		<h3>Multiplication Game Range</h3><span>Enter the correct answer for each multiplication problem:</span>
+		<div id="pendingqlist"></div>
 	</div>
 
 	<div>
@@ -134,16 +135,18 @@
 			document.getElementById("problem").innerHTML = problem;
 			document.getElementById("answer").value = "";
 			document.getElementById("answer").focus();
+
+			document.getElementById("pendingqlist").innerText = qlist;
 		}
 
-		let startTable = 8;
+		let startTable = 6;
 		let endTable = 9;
 		var qlist = new Array()
 		for (let i = startTable; i <= endTable; i++) {
 			for (let j = 2; j <= 9; j++) {
 				const result = i * j;
 				//console.log(`${i} x ${j} = ${result}`);
-				qlist.push(`${i} x ${j} = ${result}`)
+				qlist.push(`${i} x ${j} = `);// ${result}`)
 			}
 		}
 		console.log(qlist);
