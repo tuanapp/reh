@@ -156,7 +156,7 @@
         var correctAnswers = [];
         var incorrectAnswers = [];
 
-        function speakWord(word, _rate = 0.4) {
+        function speakWord(word, _rate = 0.4, _voice = "UK English Female") {
             var voiceProvider = "default";
 
             //TODO
@@ -174,11 +174,11 @@
                     console.log('User is using the Tizen Browser'); //alert('Tizen');
                     if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function' || testTvMode) {
                         voiceProvider = "responsiveVoice" + "-Tizen";
-                        responsiveVoice_apiRequests++;
-                        debugger
+                        responsiveVoice_apiRequests++;                        
                         wordEl.innerText += log = `[start]${_rate}`
-                        // responsiveVoice.speak(word, "UK English Male", {pitch: 0.75, rate: 0.75});
-                        responsiveVoice.speak(word, "UK English Female", { pitch: 1, rate: _rate });
+                        //pitch (range 0 to 2), rate (range 0 to 1.5), volume (range 0 to 1)
+                        // responsiveVoice.speak(word, "UK English Male", {pitch: 0.75, rate: 0.75}); 
+                        responsiveVoice.speak(word, _voice, { pitch: 1, rate: _rate });
                         wordEl.innerText += `[end]${_rate}`
                     } else {
                         voiceProvider = "undefined. something went wrong in Tizen!";
@@ -229,6 +229,7 @@
         let processWord = null;
         let intervalId = null;
         let initialTimeout = null;
+        let voice = "US English Female";
         function processWords() {
             //let currentIndex = 0;
             let rate = 0.6;
@@ -250,11 +251,14 @@
                     }
 
                     console.log(`Processing word "${currentWord}"...`); // replace with your processing logic
-                    speakWord(currentWord, rate);
+                    speakWord(currentWord, rate, voice);
                     rate = rate - 0.1;
                     //currentWordIndex = (currentWordIndex + 1) % words.length;
                     clearInterval(intervalId);
-                    intervalId = setInterval(processWord, 2000);
+
+                    // intervalId = setInterval(processWord, 2000);
+                    intervalId = setInterval(function () { voice = "UK English Female";  processWord(); }, 2000);
+
                     count++;
                     debugger
                     
@@ -294,18 +298,8 @@
         function startProgram() {
             processWords().stop();
             processWords().start();
+            document.getElementById('startBtn').style.visibility = 'hidden';
         }
-        /*function displayWord() {
-            speakWord(words[currentWordIndex]);
-
-            if (currentWordIndex >= words.length) {
-                currentWordIndex = 0;
-                numWords++;
-            }
-            if (numWords < 5) {
-                setTimeout(displayWord, 1000);
-            }
-        }*/
 
         function updateAnswers() {
             var correctList = document.getElementById("correctList");
@@ -331,7 +325,6 @@
             let std = document.getElementById("study");
 
             if (std.innerHTML !== '') {
-                //document.location.reload();
                 std.innerHTML = "";
                 document.getElementById("studyBtn").style.visibility = 'hidden';
                 return;
@@ -374,10 +367,6 @@
             updateAnswers();
             document.getElementById("answer_dic").value = "";
 
-            /*count = 0; currentIteration = 0;
-
-            processWords();*/
-
             currentWordIndex++;
             processWords().next();
         }
@@ -391,32 +380,6 @@
                 }
             }
         });
-
-
-
-        //displayWord();
-        //processWords();
-
-        //OLD
-        // Load words from Google Sheets
-        /*function loadWords() {
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: "1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c",
-                range: "Main!B2:B10"
-            }).then(function(response) {
-                var result = response.result;
-                if (result.values.length > 0) {
-                    for (var i = 0; i < result.values.length; i++) {
-                        words.push(result.values[i][0]);
-                    }
-                    displayWord();
-                } else {
-                    console.log("No data found.");
-                }
-            }, function(response) {
-                console.log("Error: " + response.result.error.message);
-            });
-        }*/
 
         document.getElementById("word").innerText = "Loading.........";
 
