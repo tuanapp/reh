@@ -227,12 +227,19 @@
 
             GenerateQuestionItem("Addition", additionDigits, questionsContainer, generateAdditionQuestion);
 
+            //test x type
+            GenerateQuestionItem("AdditionX", additionDigits, questionsContainer, generateAdditionXQuestion);
+
+
             /*var additionQuestion = generateAdditionQuestion(additionDigits);
             additionQuestion = fetchQuestion("add", additionQuestion); //store
             var additionElement = createQuestionElement("Addition", additionQuestion);
             questionsContainer.appendChild(additionElement);*/
 
             GenerateQuestionItem("Subtraction", subtractionDigits, questionsContainer, generateSubtractionQuestion);
+
+            GenerateQuestionItem("SubtractionX", subtractionDigits, questionsContainer, generateSubtractionXQuestion);
+
 
             /*var subtractionQuestion = generateSubtractionQuestion(subtractionDigits);
             subtractionQuestion = fetchQuestion("sub", subtractionQuestion);
@@ -313,10 +320,22 @@
             return number1 + " + " + number2;
         }
 
+        function generateAdditionXQuestion(digits) {
+            var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+            var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+            return "__" + " + " + number2 + " = " + number1;
+        }
+
         function generateSubtractionQuestion(digits) {
             var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
             var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
             return number1 + " - " + number2;
+        }
+
+        function generateSubtractionXQuestion(digits) {
+            var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+            var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+            return "__" + " - " + number2 + " = " + number1;            
         }
 
         function generateMultiplicationQuestion(digits) {
@@ -380,12 +399,20 @@
         });
 
         function evaluateQuestion(questionType, question) {
-            var operands = question.split(/\+|\-|\×|\÷/);
+            debugger
+            var operands = question.split(/\+|\-|\×|\÷|\=/);
             var operand1 = parseInt(operands[0]);
             var operand2 = parseInt(operands[1]);
+            var operand3 = 0
+            debugger
+            if(operands.length>2) operand3 = parseInt(operands[2]);
 
-            if (questionType.includes("Addition")) {
-                return operand1 + operand2;
+            if (questionType.includes("AdditionX")) {
+                return operand3 - operand2;
+            } else if (questionType.includes("SubtractionX")) {
+                return operand3 + operand2;                
+            } else if (questionType.includes("Addition")) {
+                return operand1 - operand2;
             } else if (questionType.includes("Subtraction")) {
                 return operand1 - operand2;
             } else if (questionType.includes("Multiplication")) {
