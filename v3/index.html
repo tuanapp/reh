@@ -123,6 +123,7 @@
     </select>
     Listen to the word and enter it below: <div id="word"></div>
     <button id="startBtn" onclick="startProgram()">Start</button>
+    <button id="btnReadAll" onclick="readAll()">Read All</button>
     <button id="read" onclick="readWord()">Read</button>
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
@@ -300,6 +301,30 @@
             processWords().start();
             document.getElementById('startBtn').style.visibility = 'hidden';
         }
+
+        function readAll() {
+            debugger
+            var allwordsAsString =  getWordSet(words).join(", ");
+            speakWord(allwordsAsString, 0.4, "US English Female");
+            setTimeout(function () {
+                document.getElementById('btnReadAll').style.visibility = 'visible';
+            }, 10000);            
+            document.getElementById('btnReadAll').style.visibility = 'hidden';
+        }
+
+        function getWordSet(words){
+            let _words = words;
+            _words.shift();
+            const indexOfHash = _words.findIndex(item => item.startsWith('#'));
+            const selectedItems = _words.slice(0, indexOfHash >= 0 ? indexOfHash : array.length);
+            // let initialCount = words;
+            // words.shift();
+            // nextSectionStart = words.indexOf(a=>a.startsWith('#'));
+            // var selectedWordCount = 
+            // words.splice(nextSectionStart, words.length - )
+            return selectedItems;
+        }
+            
 
         function updateAnswers() {
             var correctList = document.getElementById("correctList");
