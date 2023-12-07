@@ -378,7 +378,7 @@
                 var correctAnswer = evaluateQuestion(questionType, question);
 
                 var answerElement = document.createElement("div");
-
+                debugger
                 if (userAnswer === correctAnswer) {
                     answerInput.classList.add("answer-correct");
                     answerElement.textContent = "Correct!";
@@ -412,7 +412,7 @@
             } else if (questionType.includes("SubtractionX")) {
                 return operand3 + operand2;                
             } else if (questionType.includes("Addition")) {
-                return operand1 - operand2;
+                return operand1 + operand2;
             } else if (questionType.includes("Subtraction")) {
                 return operand1 - operand2;
             } else if (questionType.includes("Multiplication")) {
