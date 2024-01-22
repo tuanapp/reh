@@ -92,7 +92,7 @@
 	<div>
 		<div id="problem"></div>
 		<input type="tel" id="answer" name="answer" autofocus min="0" max="99" maxlength="2">
-		<button onclick="checkAnswer()">Submit</button>
+		<button id="btnSubmit" onclick="checkAnswer()">Submit</button>
 		<div id="result"></div>
 		<div id="score">0</div>
 
@@ -143,11 +143,13 @@
 
 		function setProblem() {
 			var problem = generateProblem();
-			document.getElementById("problem").innerHTML = problem;
-			document.getElementById("answer").value = "";
-			document.getElementById("answer").focus();
-
-			document.getElementById("pendingqlist").innerText = qlist;
+			debugger
+			if (problem != undefined) {
+				document.getElementById("problem").innerHTML = problem;
+				document.getElementById("answer").value = "";
+				document.getElementById("answer").focus();
+				document.getElementById("pendingqlist").innerText = qlist;
+			}
 		}
 
 		let startTable = 6;
@@ -235,7 +237,9 @@
 
 					saveStringList(mul_range_score_history, "mul_range_score_history", true);
 					playSuccessSound();
-
+					document.getElementById("problem").innerHTML = "Done!";
+					document.getElementById("answer").style.visibility = "hidden";
+					document.getElementById("btnSubmit").style.visibility = "hidden";
 				}
 				numQuestions++;
 				document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
