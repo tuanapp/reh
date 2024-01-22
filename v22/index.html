@@ -76,10 +76,14 @@
 			border-radius: 5px;
 		}
 	</style>
+
 </head>
 
 <body>
-	<script async src="../fw.js"></script>
+	<!-- <script async src="../fw.js"></script>
+	<script async src="../fwLocalStorage.js"></script> -->
+	<script src="../fw.js"></script>
+	<script src="../fwLocalStorage.js"></script>
 	<div style="float: left; max-width: 200px; position: absolute">
 		<h3>Multiplication Game Range</h3><span>Enter the correct answer for each multiplication problem:</span>
 		<div id="pendingqlist"></div>
@@ -97,9 +101,11 @@
 		Time:<div id="timer"></div> s
 		<button class="btn clear" onclick="reset()">Clear</button>
 		<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
+		<div id="elmScoreHistory"></div>
 		<div id="history"></div>
 	</div>
 	<script>
+		var freez = false;
 		var score = 0;
 		var numQuestions = 0;
 		var numCorrect = 0;
@@ -130,6 +136,10 @@
 		if (storedHistory) {
 			answerHistory = JSON.parse(storedHistory);
 		}
+		//score history
+		//var scoreHistory = [];
+		var mul_range_score_history = getStringList("mul_range_score_history");
+
 
 		function setProblem() {
 			var problem = generateProblem();
@@ -142,6 +152,11 @@
 
 		let startTable = 6;
 		let endTable = 9;
+
+		//TESTING-ONLY-THIS SHOULD NEVER GO PROD
+		startTable = 6;
+		endTable = 6;
+
 		var qlist = new Array()
 		for (let i = startTable; i <= endTable; i++) {
 			for (let j = 2; j <= 9; j++) {
@@ -162,13 +177,23 @@
 			// Generate a random index
 			const randomIndex = Math.floor(Math.random() * qlist.length);
 			// Remove the item at the random index from the array
-			debugger
+			//debugger
 			const removedItem = qlist.splice(randomIndex, 1)[0];
 			return removedItem;
 		}
 
+		function isTwoDigits(value) {
+			const regex = /^\d{2}$/;
+			return regex.test(value);
+		}
+
 		function checkAnswer() {
 			var userAnswer = document.getElementById("answer").value;
+
+			if (!isTwoDigits(userAnswer)) {
+				playAnotherSound();
+				return;
+			}
 
 			if (userAnswer !== "") {
 				var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
@@ -188,13 +213,35 @@
 					answerHistory.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
 				}
 				if (qlist.length === 0) {
+					debugger
+
+					// Loop through all existing interval IDs
+					// for (let i = 0; i < window.timerInterval.length; i++) {
+					// 	// Clear each interval using the ID
+					// 	window.clearInterval(window.timerInterval[i]);
+					// }
+					freez = true;
+					//saveStringList("mul_range_score_history", );
+					debugger
+					mul_range_score_history.push(document.getElementById("timer").innerHTML);
+					// Display incorrect questions in the div
+					var elmScoreHistory = document.getElementById("elmScoreHistory");
+					elmScoreHistory.innerHTML = "<h2>History of Scores:</h2>";
+					mul_range_score_history.forEach(element => {
+						var question = document.createElement("p");
+						question.textContent = element;
+						elmScoreHistory.appendChild(question);
+					});
+
+					saveStringList(mul_range_score_history, "mul_range_score_history", true);
 					playSuccessSound();
+
 				}
 				numQuestions++;
 				document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
 				setTimeout(setProblem, 300);
 
-				debugger
+				//debugger
 
 				// Display incorrect questions in the div
 				var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
@@ -233,9 +280,11 @@
 		var timerInterval = setInterval(updateTimer, 1000);
 
 		function updateTimer() {
-			var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
-			document.getElementById("timer").innerHTML = elapsedTime;
 
+			if (!freez) {
+				var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
+				document.getElementById("timer").innerHTML = elapsedTime;
+			}
 			//document.getElementById("answer").disabled = true;
 			if (parseInt(document.getElementById("timer").innerText) > 100 && document.getElementById("answer").style.background != "red") //100 - 10
 			{

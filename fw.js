@@ -9,6 +9,10 @@ function playFailSound() {
     playSound('sawtooth', 0.1);
 }
 
+function playAnotherSound() {
+    playSound('triangle', 0.1);
+}
+
 function playSuccessSound() {
     playSound('sine', 0.5, 880);
     setTimeout(function () {

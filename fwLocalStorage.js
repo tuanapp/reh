@@ -1,4 +1,4 @@
-let audioContext;
+// let audioContext;
 function init() {
     
 }
