@@ -128,6 +128,9 @@
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
     <button id="studyBtn" onclick="study()">Study</button>
+
+<input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" /> forceExternalTextToSpeach
+
     <div id="study"></div>
 
     <div id="result"></div>
@@ -161,7 +164,12 @@
             var voiceProvider = "default";
 
             //TODO
-            let testTvMode = true;
+            let testTvMode = false;
+            let forceExternalTextToSpeach = document.querySelector("#forceExternalTextToSpeach");
+            debugger
+            if(forceExternalTextToSpeach.checked)
+                testTvMode = true;
+
             let log = "";
 
             try {
