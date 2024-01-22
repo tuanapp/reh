@@ -111,10 +111,12 @@
 
     <!--#approach02 for old browsers https://responsivevoice.org/app/?email=kdx.shaggy%40gmail.com&vgo_ee=AEFExsNcr4yLxSxzlAO39dp3ZG%2FIOixhj0XJ443Cm1uK5bE5%3A6ZZXm8z2Q9wwz7Lk4hzBq4H%2FF836tKtE-->
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
-
+    <script src="../fwLocalStorage.js"></script>
 </head>
 
 <body>
+    
+
     <div id="maintitle">
         <h3>Word Game v3.2</h3>
     </div>
@@ -128,8 +130,10 @@
     <input type="text" id="answer_dic" name="answer_dic" autofocus>
     <button onclick="checkAnswer()">Submit</button>
     <button id="studyBtn" onclick="study()">Study</button>
+    <button id="clearCache" onclick="deleteStringList('words')">Clear-Cache</button>
 
-<input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" /> forceExternalTextToSpeach
+    <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" />
+    forceExternalTextToSpeach
 
     <div id="study"></div>
 
@@ -167,7 +171,7 @@
             let testTvMode = false;
             let forceExternalTextToSpeach = document.querySelector("#forceExternalTextToSpeach");
             debugger
-            if(forceExternalTextToSpeach.checked)
+            if (forceExternalTextToSpeach.checked)
                 testTvMode = true;
 
             let log = "";
@@ -183,7 +187,7 @@
                     console.log('User is using the Tizen Browser'); //alert('Tizen');
                     if (typeof window.responsiveVoice !== 'undefined' && typeof window.responsiveVoice.speak === 'function' || testTvMode) {
                         voiceProvider = "responsiveVoice" + "-Tizen";
-                        responsiveVoice_apiRequests++;                        
+                        responsiveVoice_apiRequests++;
                         wordEl.innerText += log = `[start]${_rate}`
                         //pitch (range 0 to 2), rate (range 0 to 1.5), volume (range 0 to 1)
                         // responsiveVoice.speak(word, "UK English Male", {pitch: 0.75, rate: 0.75}); 
@@ -266,11 +270,11 @@
                     clearInterval(intervalId);
 
                     // intervalId = setInterval(processWord, 2000);
-                    intervalId = setInterval(function () { voice = "UK English Female";  processWord(); }, 2000);
+                    intervalId = setInterval(function () { voice = "UK English Female"; processWord(); }, 2000);
 
                     count++;
                     debugger
-                    
+
 
                 }, 500);
 
@@ -312,15 +316,15 @@
 
         function readAll() {
             debugger
-            var allwordsAsString =  getWordSet(words).join(", ");
+            var allwordsAsString = getWordSet(words).join(", ");
             speakWord(allwordsAsString, 0.4, "US English Female");
             setTimeout(function () {
                 document.getElementById('btnReadAll').style.visibility = 'visible';
-            }, 10000);            
+            }, 10000);
             document.getElementById('btnReadAll').style.visibility = 'hidden';
         }
 
-        function getWordSet(words){
+        function getWordSet(words) {
             let _words = words;
             _words.shift();
             const indexOfHash = _words.findIndex(item => item.startsWith('#'));
@@ -332,7 +336,7 @@
             // words.splice(nextSectionStart, words.length - )
             return selectedItems;
         }
-            
+
 
         function updateAnswers() {
             var correctList = document.getElementById("correctList");
@@ -416,30 +420,48 @@
 
         document.getElementById("word").innerText = "Loading.........";
 
-        setTimeout(function () {
 
-            fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
-                .then(response => response.json())
-                .then(data => {
+        try {
+            debugger
+            if (!doesStringListExist("words")) {
+                setTimeout(function () {
 
-                    debugger
-                    // Assuming the response is an array of strings
-                    const stringList = data.valueRanges[0].values[0];
-                    words = stringList;
+                    fetch('https://content-sheets.googleapis.com/v4/spreadsheets/1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c/values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA100&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
+                        .then(response => response.json())
+                        .then(data => {
 
-                    setupDropdown();
+                            debugger
+                            // Assuming the response is an array of strings
+                            const stringList = data.valueRanges[0].values[0];
+                            words = stringList;
 
-                    //processWords().start();
-                    document.getElementById("answer_dic").click();
-                    // Do something with the stringList
-                    console.log(stringList);
-                })
-                .catch(error => {
-                    // Handle any errors that occur during the request
-                    console.error('Error:', error);
-                });
+                            saveStringList(stringList, "words");
+                            loadResult();
+                        })
+                        .catch(error => {
+                            // Handle any errors that occur during the request
+                            console.error('Error:', error);
+                        });
 
-        }, 2000);
+                }, 2000);
+            }
+            else {
+                words = getStringList("words");
+                loadResult();
+            }
+
+        } catch (err) {
+            console.error(err)
+        }
+
+        function loadResult(){
+            debugger
+            setupDropdown();
+            //processWords().start();
+            document.getElementById("answer_dic").click();
+            // Do something with the stringList
+            console.log(words);
+        }
 
 
         function setupDropdown() {
