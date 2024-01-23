@@ -4,119 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Word Game</title>
-    <style>
-        body {
-            background-color: #1c1c1c;
-            color: #e6e6e6;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        h1 {
-            margin-top: 50px;
-        }
-
-        input[type="text"] {
-            font-size: 24px;
-            margin-top: 20px;
-            padding: 10px;
-            width: 300px;
-            background-color: #2d2d2d;
-            color: #e6e6e6;
-            border: none;
-            border-radius: 5px;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            box-shadow: 0 0 5px #4CAF50;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 24px;
-            background-color: #4CAF50;
-            color: #e6e6e6;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #3e8e41;
-        }
-
-        #result {
-            font-size: 20px;
-            margin-top: 20px;
-        }
-
-        #correctAnswers,
-        #incorrectAnswers {
-            /*margin-top: 50px;*/
-            font-size: 18px;
-            float: left;
-            padding-left: 10px;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: inline-block;
-            text-align: left;
-        }
-
-        li {
-            margin: 5px 0;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 15px;
-            line-height: 1.4;
-        }
-
-        .correct {
-            background-color: #4CAF50;
-            color: #e6e6e6;
-        }
-
-        .incorrect {
-            background-color: #FFCDD2;
-            color: red;
-        }
-
-        #definition {
-            color: yellow;
-            border: white;
-            border-style: double;
-        }
-
-        #def {
-            /*border: white;
-            border-style: double;*/
-        }
-
-        #maintitle {
-            float: left
-        }
-
-        #word {
-            font-size: 12px;
-        }
-    </style>
-
     <script src="https://apis.google.com/js/api.js"></script>
-
     <!--#approach02 for old browsers https://responsivevoice.org/app/?email=kdx.shaggy%40gmail.com&vgo_ee=AEFExsNcr4yLxSxzlAO39dp3ZG%2FIOixhj0XJ443Cm1uK5bE5%3A6ZZXm8z2Q9wwz7Lk4hzBq4H%2FF836tKtE-->
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
     <script src="../fwLocalStorage.js"></script>
+    <script src="../helper.js"></script>
+    <link rel="stylesheet" href="../index.css">
+    </link>
 </head>
 
 <body>
-    
-
     <div id="maintitle">
         <h3>Word Game v3.2</h3>
     </div>
@@ -163,15 +60,21 @@
         var numWords = 0;
         var correctAnswers = [];
         var incorrectAnswers = [];
+        var forceExternalTextToSpeach = false;
+
+        function isForceExternal(){
+            forceExternalTextToSpeach = document.querySelector("#forceExternalTextToSpeach");            
+            if (forceExternalTextToSpeach.checked)
+                return true;
+            else return false;
+        }
 
         function speakWord(word, _rate = 0.4, _voice = "UK English Female") {
             var voiceProvider = "default";
 
             //TODO
             let testTvMode = false;
-            let forceExternalTextToSpeach = document.querySelector("#forceExternalTextToSpeach");
-            debugger
-            if (forceExternalTextToSpeach.checked)
+            if (isForceExternal())
                 testTvMode = true;
 
             let log = "";
@@ -197,8 +100,19 @@
                         voiceProvider = "undefined. something went wrong in Tizen!";
                     }
                 } else if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
+                    const synth = window.speechSynthesis;
                     var msg = new SpeechSynthesisUtterance(word);
-                    msg.rate = 0; //msg.pitch = 0;
+                    let voices = synth.getVoices();
+                    console.log(voices);
+
+                    // Adjust voice (optional):
+                    var randomIndex = getRandomIntegerFromArray([0,1, 2, 4, 5, 6]);
+                    //var randomIndex = Math.floor(Math.random() * 5);
+                    msg.voice = voices[randomIndex]; // Change to a different voice index (0-based)
+
+                    msg.rate = _rate; // Set a slower rate (0.1 - 1.0, where 1.0 is normal speed)
+                    //msg.pitch = 0;
+                    console.log(`${randomIndex} ${msg.voice} rate:${msg.rate} pitch:${msg.pitch}`);
                     window.speechSynthesis.speak(msg);
                 } else {
                     voiceProvider = "NONE!";
@@ -214,8 +128,6 @@
             var char = word.charAt(0);
             document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests} ${log}`;
         }
-
-
 
         /*let count = 0;
         function processWords() {
@@ -273,9 +185,6 @@
                     intervalId = setInterval(function () { voice = "UK English Female"; processWord(); }, 2000);
 
                     count++;
-                    debugger
-
-
                 }, 500);
 
             };
@@ -296,14 +205,20 @@
 
         //for manual button
         function readWord() {
-            debugger
             var readBtn = document.getElementById('read');
             readBtn.setAttribute('disabled', '')
             readBtn.style.background = 'black';
+
+            let btnLock = 10000;
+            if(!isForceExternal())
+            {
+                btnLock = 2000;
+            }
+
             setTimeout(function () {
                 document.getElementById('read').removeAttribute('disabled');
                 readBtn.style.background = '#4CAF50';
-            }, 10000);
+            }, btnLock);
 
             speakWord(words[currentWordIndex]);
         }
@@ -397,9 +312,14 @@
                 result.style.color = "green"
                 correctAnswers.push(userAnswer);
             } else {
-                result.innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";
                 result.style.color = "red"
-                incorrectAnswers.push(userAnswer + " (" + correctAnswer + ")");
+                var item = userAnswer + " (" + correctAnswer + ")";
+                if(userAnswer.toLowerCase() === correctAnswer.toLowerCase())
+                {
+                    item += ' [case]';
+                }
+                result.innerHTML = "Incorrect. The correct answer is " + words[currentWordIndex] + ".";                
+                incorrectAnswers.push(item);
             }
             updateAnswers();
             document.getElementById("answer_dic").value = "";
@@ -454,7 +374,7 @@
             console.error(err)
         }
 
-        function loadResult(){
+        function loadResult() {
             debugger
             setupDropdown();
             //processWords().start();
