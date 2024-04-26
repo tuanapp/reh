@@ -32,7 +32,7 @@
     <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" />
     forceExternalTextToSpeach
 
-    <div id="study"></div>
+    
 
     <div id="result"></div>
 
@@ -41,7 +41,7 @@
         </div>
         <iframe id="definitionFrame" src="" title="def" style="width: 70%;height: 500px; float:right"></iframe>
     </div>
-
+    <div id="study"></div>
     <div id="correctAnswers">
         <h6>Correct |</h6>
         <ul id="correctList"></ul>
@@ -279,21 +279,48 @@
             if (std.innerHTML !== '') {
                 std.innerHTML = "";
                 document.getElementById("studyBtn").style.visibility = 'hidden';
-                return;
+                //return;
             }
 
             var ul = document.createElement("div");
 
             words.map((w) => {
                 var li = document.createElement("button");
-                li.style = "margin-right: 4px;"
+                //li.style = "";
+                li.classList = "btnword";
                 li.innerText = w;
-                if (w.indexOf('#') > -1) ul.appendChild(document.createElement("hr"));
+                if (w.indexOf('#') > -1) 	ul.appendChild(document.createElement("hr"));
+                debugger                
+                //li.addEventListener("click", () => getDefinition(w));
+                // li.addEventListener("focus",
+                //     function () {
+                //         this.classList.add('focused');
+                //     }
+                // );
+                li.addEventListener("click",
+                    function () {
+                        this.classList.add('studied');
+                        this.classList.add('focused');
+                    }
+                );
+                li.addEventListener("focusout",
+                    function () {
+                        this.classList.remove('focused');
+                        this.classList.add('normal');
+                    }
+                );
+                
+                li.addEventListener("dblclick",
+                    function () {
+                        this.blur();
+                        this.classList.remove('studied');
+                        //this.style.backgroundColor = '#3e8e41';
+                    }
+                );
+                
                 ul.appendChild(li);
             })
             std.appendChild(ul);
-
-
         }
 
         function checkAnswer() {
@@ -430,8 +457,13 @@
                 .then(response => response.json())
                 .then(data => {
                     debugger
-                    const definition = data.items[0].snippet;
                     let meaning = `Definition: ${definition}`;
+                    if(data.items == undefined && data.error.code == 429)
+                    {
+                        meaning = data.error.message;
+                    }else{
+                        const definition = data.items[0].snippet;                    
+                    }
                     console.log(meaning);
                     document.getElementById("definition").innerText = meaning;
                 })

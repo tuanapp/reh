@@ -37,6 +37,24 @@ button {
     transition: background-color 0.3s;
 }
 
+.btnword{
+    margin-right: 4px;
+    background-color: #3e8e41;
+    /* color: #dd2d2d; */
+}
+.btnword:focus{   
+    background-color: #dd2d2d;
+}
+.normal {
+    background-color: #3e8e41;
+}
+/* .focused{
+    background-color: #dd2d2d;
+} */
+.studied{   
+    background-color: darkblue;
+}
+
 button:hover {
     background-color: #3e8e41;
 }
