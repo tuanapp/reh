@@ -61,6 +61,7 @@
         var correctAnswers = [];
         var incorrectAnswers = [];
         var forceExternalTextToSpeach = false;
+        var activeStudyWord = "";
 
         function isForceExternal(){
             forceExternalTextToSpeach = document.querySelector("#forceExternalTextToSpeach");            
@@ -301,6 +302,12 @@
                     function () {
                         this.classList.add('studied');
                         this.classList.add('focused');
+
+                        //
+                        // activeStudyWord = w;
+                        debugger
+                        getDefinition(w);
+                        speakWord(w);
                     }
                 );
                 li.addEventListener("focusout",
@@ -457,12 +464,13 @@
                 .then(response => response.json())
                 .then(data => {
                     debugger
-                    let meaning = `Definition: ${definition}`;
+                    let meaning = '';
                     if(data.items == undefined && data.error.code == 429)
                     {
                         meaning = data.error.message;
                     }else{
-                        const definition = data.items[0].snippet;                    
+                        const definition = data.items[0].snippet;    
+                        meaning = `Definition: ${definition}`;                
                     }
                     console.log(meaning);
                     document.getElementById("definition").innerText = meaning;
