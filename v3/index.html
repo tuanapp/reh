@@ -481,6 +481,19 @@
 
     </script>
 
+    <script>
+         window.onbeforeunload = function (e) {
+          // Check if the user scrolled down
+          if ((window.scrollY || window.pageYOffset) > 0) {
+            e.preventDefault();
+            e.returnValue = ''; // Chrome requires returnValue to be set
+        
+            // Display confirmation dialog
+            return "Are you sure you want to reload?";
+          }
+        }; 
+    </script>
+
 </body>
 
 </html>
