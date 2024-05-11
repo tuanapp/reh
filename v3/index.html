@@ -9,8 +9,10 @@
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
     <script src="../fwLocalStorage.js"></script>
     <script src="../helper.js"></script>
-    <link rel="stylesheet" href="../index.css">
-    </link>
+    <link rel="stylesheet" href="../index.css"></link>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body>
@@ -306,7 +308,55 @@
                         //
                         // activeStudyWord = w;
                         debugger
-                        getDefinition(w);
+                        
+                        /*
+                        getDefinitionAsync(w, 'meaning')
+                            .then(definition => {
+                                Toastify({
+                                    text: definition,
+                                    duration: 30000,
+                                    destination: "https://github.com/apvarun/toastify-js",
+                                    newWindow: true,
+                                    close: true,
+                                    gravity: "top", // `top` or `bottom`
+                                    position: "left", // `left`, `center` or `right`
+                                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                                    style: {
+                                        background: "linear-gradient(to right, #00b09b, #96c93d)",
+                                    },
+                                    onClick: function(){} // Callback after click
+                                    }).showToast();
+                                    showDefinition(w, definition); //getDefinition(w);
+                            })
+                            .catch(error => {
+                                console.error(error);
+                        });*/
+
+                        var _postfix = 'meaning';
+
+                        getDefinitionAsync(w, _postfix)
+                            .then(definition => {
+                                Toastify({
+                                    text: definition,
+                                    duration: 10000,
+                                    destination: "https://github.com/apvarun/toastify-js",
+                                    newWindow: true,
+                                    close: true,
+                                    gravity: "top", // `top` or `bottom`
+                                    position: "left", // `left`, `center` or `right`
+                                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                                    style: {
+                                        background: "linear-gradient(to right, #00b09b, #96c93d)",
+                                    },
+                                    onClick: function(){} // Callback after click
+                                    }).showToast();
+                                    showDefinition(w, definition, _postfix); //getDefinition(w);
+                            })
+                            .catch(error => {
+                                console.error(error);
+                        });
+
+
                         speakWord(w);
                     }
                 );
@@ -453,31 +503,63 @@
         const apiKey = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
         const cx = '2644d07aa4a1f41e9';
 
-        function getDefinition(word) {
+        function showDefinition(word, definition, postfix) {
 
-            let q = `${word} meaning`;
+            let q = `${word} ${postfix}`;
             let defFrame = document.getElementById("definitionFrame");
             defFrame.src = `https://www.google.com/search?igu=1&ei=&q=${q}`
+            document.getElementById("definition").innerText = definition;
 
-            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    debugger
-                    let meaning = '';
-                    if(data.items == undefined && data.error.code == 429)
-                    {
-                        meaning = data.error.message;
-                    }else{
-                        const definition = data.items[0].snippet;    
-                        meaning = `Definition: ${definition}`;                
-                    }
-                    console.log(meaning);
-                    document.getElementById("definition").innerText = meaning;
-                })
-                .catch(error => console.error(error));
-        }
+            // const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
+            // fetch(url)
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         debugger
+            //         let meaning = '';
+            //         if(data.items == undefined && data.error.code == 429)
+            //         {
+            //             meaning = data.error.message;
+            //         }else{
+            //             const definition = data.items[0].snippet;    
+            //             meaning = `${definition}`;                
+            //         }
+            //         console.log(meaning);
+                    
+            //     })
+            //     .catch(error => console.error(error));
+        }        
         //getDefinition('apple');
+
+        async function getDefinitionAsync(word, postfix) {
+            const q = `${word} ${postfix}`;
+            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
+            console.log(url);
+
+            /*
+            YOUR KEYS
+            Key (School Dictionary):
+            8113ce9c-c667-48c6-b4fa-cfeef8663df9
+            Key (Intermediate Dictionary):
+            5d95df6a-ea19-47b8-b914-f7655a7cda03
+            https://www.dictionaryapi.com/api/v3/references/sd4/json/baseball?key=your-api-key
+            https://www.dictionaryapi.com/api/v3/references/sd4/json/baseball?key=8113ce9c-c667-48c6-b4fa-cfeef8663df9
+            */
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.items === undefined && data.error.code === 429) {
+                return data.error.message;
+                } else {
+                const definition = data.items[0].snippet;
+                return `${definition}`;
+                }
+            } catch (error) {
+                console.error(error);
+                return "Error fetching definition"; // Handle errors gracefully
+            }
+        }
 
     </script>
 
