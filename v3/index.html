@@ -66,6 +66,7 @@
         var incorrectAnswers = [];
         var forceExternalTextToSpeach = false;
         var activeStudyWord = "";
+        var _postfix = 'meaning';
 
         function filter(key, list){
             //RESET
@@ -87,6 +88,9 @@
         }
 
         function speakWord(word, _rate = 0.4, _voice = "UK English Female") {
+
+            if(word.indexOf('#') > -1) return;
+
             var voiceProvider = "default";
 
             //TODO
@@ -346,10 +350,9 @@
                                 console.error(error);
                         });*/
 
-                        var _postfix = 'meaning';
-
                         getDefinitionAsync(w, _postfix)
                             .then(definition => {
+                                debugger
                                 Toastify({
                                     text: definition,
                                     duration: 20000,
@@ -365,11 +368,12 @@
                                     },
                                     onClick: function(){} // Callback after click
                                     }).showToast();
+                                    debugger
                                     showDefinition(w, definition, _postfix); //getDefinition(w);
                             })
                             .catch(error => {
                                 console.error(error);
-                        });
+                            });
 
 
                         speakWord(w);
@@ -402,8 +406,11 @@
             var userAnswer = document.getElementById("answer_dic").value; //.toLowerCase();
             var correctAnswer = words[currentWordIndex];//.toLowerCase();
 
+            //if(word.indexOf('#') > -1){currentWordIndex++; return; }
+
             //show definition
-            getDefinitionAsync(correctAnswer);
+            var definition = getDefinitionAsync(correctAnswer);
+            showDefinition(correctAnswer, definition, _postfix);
 
             let result = document.getElementById("result");
             if (userAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
@@ -547,7 +554,7 @@
         //getDefinition('apple');
 
         async function getDefinitionAsync(word, postfix) {
-
+debugger
             //1. Google
             const q = `${word} ${postfix}`;
             const defSource1 = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
