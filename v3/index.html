@@ -30,6 +30,7 @@
     <button onclick="checkAnswer()">Submit</button>
     <button id="studyBtn" onclick="study()">Study</button>
     <button id="clearCache" onclick="deleteStringList('words')">Clear-Cache</button>
+    <button id="filterDifficultWords" onclick="filter('words', missedWords)">Filter Difficult Words</button>
 
     <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" />
     forceExternalTextToSpeach
@@ -56,6 +57,7 @@
     <script>
 
         var words = []; //["apple", "banana", "cherry", "orange", "pear"];
+        var missedWords = [];
         var apiCallRequests = 0;
         var responsiveVoice_apiRequests = 0;
         var currentWordIndex = 0;
@@ -64,6 +66,18 @@
         var incorrectAnswers = [];
         var forceExternalTextToSpeach = false;
         var activeStudyWord = "";
+
+        function filter(key, list){
+            //RESET
+            words = filterDifficultWords(key, list);
+            currentWordIndex = 0;
+            correctAnswers = [];
+            incorrectAnswers = [];
+            var correctList = document.getElementById("correctList");
+            var incorrectList = document.getElementById("incorrectList");
+            correctList.innerHTML = "";
+            incorrectList.innerHTML = "";
+        }
 
         function isForceExternal(){
             forceExternalTextToSpeach = document.querySelector("#forceExternalTextToSpeach");            
@@ -281,7 +295,7 @@
 
             if (std.innerHTML !== '') {
                 std.innerHTML = "";
-                document.getElementById("studyBtn").style.visibility = 'hidden';
+                //document.getElementById("studyBtn").style.visibility = 'hidden';
                 return;
             }
 
@@ -389,14 +403,15 @@
             var correctAnswer = words[currentWordIndex];//.toLowerCase();
 
             //show definition
-            getDefinition(correctAnswer);
+            getDefinitionAsync(correctAnswer);
 
             let result = document.getElementById("result");
-            if (userAnswer == correctAnswer) {
+            if (userAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
                 result.innerHTML = "Correct!";
                 result.style.color = "green"
                 correctAnswers.push(userAnswer);
             } else {
+                missedWords.push(correctAnswer);
                 result.style.color = "red"
                 var item = userAnswer + " (" + correctAnswer + ")";
                 if(userAnswer.toLowerCase() === correctAnswer.toLowerCase())
@@ -532,16 +547,14 @@
         //getDefinition('apple');
 
         async function getDefinitionAsync(word, postfix) {
-            const q = `${word} ${postfix}`;
-            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
-            console.log(url);
 
-            /*
-            YOUR KEYS
-            Key (School Dictionary):
-            8113ce9c-c667-48c6-b4fa-cfeef8663df9
-            Key (Intermediate Dictionary):
-            5d95df6a-ea19-47b8-b914-f7655a7cda03
+            //1. Google
+            const q = `${word} ${postfix}`;
+            const defSource1 = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
+            console.log(defSource1);
+
+            //2. Dictionaryapi
+            /*YOUR KEYS | Key (School Dictionary): 8113ce9c-c667-48c6-b4fa-cfeef8663df9 | Key (Intermediate Dictionary): 5d95df6a-ea19-47b8-b914-f7655a7cda03
             https://www.dictionaryapi.com/api/v3/references/sd4/json/baseball?key=your-api-key
             https://www.dictionaryapi.com/api/v3/references/sd4/json/baseball?key=8113ce9c-c667-48c6-b4fa-cfeef8663df9
             */
@@ -550,36 +563,27 @@
             console.log(defSource2);
 
             try {
+                var defStringBuilder = `[${word}] `;
 
                 //defSource2
-                const response2 = await fetch(defSource2);
-                //const data2 = await response2;
+                const response2 = await fetch(defSource2);                
                 const data2 = await response2.json();
-                debugger
-
-                var defStringBuilder = `[${word}] `;
+                
                 data2.forEach(elm => {
                     defStringBuilder += `\n${elm.fl} > \n* ${elm.shortdef} \n`;
-                });
-                return defStringBuilder;
-
-                // if (data2.items === undefined && data2.error.code === 429) {
-                //     return data2.error.message;
-                // } else {
-                // const definition = data2.items[0].snippet;
-                //     return `${definition}`;
-                // }
+                });                
 
                 //defSource1
-                const response = await fetch(url);
+                const response = await fetch(defSource1);
                 const data = await response.json();
-
                 if (data.items === undefined && data.error.code === 429) {
                     return data.error.message;
                 } else {
-                const definition = data.items[0].snippet;
-                    return `${definition}`;
+                    const definition = data.items[0].snippet;
+                    defStringBuilder += `\n${definition}`;
                 }
+
+                return defStringBuilder;
 
             } catch (error) {
                 console.error(error);
@@ -601,6 +605,38 @@
           }
         }; 
     </script>
+
+    <!-- <script>
+        debugger
+            const SPREADSHEET_ID = '1-peV9f0jckBJIcaKLqu5MSdcvzTBSgjaRgbR3BSuD3c';
+            const RANGE_NAME = 'Main!A1';
+            const VALUE = 'Hello, World!';
+            const API_KEY = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
+            const body = {
+                range: RANGE_NAME,
+                values: [[VALUE]],
+            };
+            // Obtain the access token (this is a placeholder, you need to implement OAuth 2.0 flow)
+            const accessToken = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';//'6ceedf1cbff86ee503e8b921b738f2e6ac65d7c4';
+            //https://content-sheets.googleapis.com/v4/spreadsheets/
+            ///values:batchGet?dateTimeRenderOption=FORMATTED_STRING&ranges=Main!A2%3AA910&majorDimension=COLUMNS&valueRenderOption=UNFORMATTED_VALUE&key=AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y')
+            const url = `https://content-sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE_NAME}?key=${API_KEY}`;
+            //const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE_NAME}?valueInputOption=RAW&key=${API_KEY}`;
+
+            console.log(url);
+            const response = fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // headers: {
+                    //     //'Authorization': `Bearer ${accessToken}`,
+                    //     'Content-Type': 'application/json',
+                    // },
+                    body: JSON.stringify(body),
+                });
+
+    </script> -->
 
 </body>
 

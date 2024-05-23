@@ -23,4 +23,8 @@ function saveStringList(list, key, overwrite = false) {
   function deleteStringList(key) {
     localStorage.removeItem(key);
   }
-  
+
+  function filterDifficultWords(key, filteredList) {    
+    saveStringList(filteredList, key, true);
+    return getStringList(key);
+  }
