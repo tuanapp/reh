@@ -276,7 +276,7 @@
         }
 
         function study() {
-            debugger
+            //debugger
             let std = document.getElementById("study");
 
             if (std.innerHTML !== '') {
@@ -293,7 +293,7 @@
                 li.classList = "btnword";
                 li.innerText = w;
                 if (w.indexOf('#') > -1) 	ul.appendChild(document.createElement("hr"));
-                debugger                
+                //debugger                
                 //li.addEventListener("click", () => getDefinition(w));
                 // li.addEventListener("focus",
                 //     function () {
@@ -307,7 +307,7 @@
 
                         //
                         // activeStudyWord = w;
-                        debugger
+                        //debugger
                         
                         /*
                         getDefinitionAsync(w, 'meaning')
@@ -338,15 +338,16 @@
                             .then(definition => {
                                 Toastify({
                                     text: definition,
-                                    duration: 10000,
-                                    destination: "https://github.com/apvarun/toastify-js",
+                                    duration: 20000,
+                                    //destination: "https://github.com/apvarun/toastify-js",
                                     newWindow: true,
                                     close: true,
-                                    gravity: "top", // `top` or `bottom`
-                                    position: "left", // `left`, `center` or `right`
+                                    gravity: "bottom", // `top` or `bottom`
+                                    position: "right", // `left`, `center` or `right`
                                     stopOnFocus: true, // Prevents dismissing of toast on hover
                                     style: {
-                                        background: "linear-gradient(to right, #00b09b, #96c93d)",
+                                        background: "black",
+                                        //background: "linear-gradient(to right, #00b09b, #96c93d)",
                                     },
                                     onClick: function(){} // Callback after click
                                     }).showToast();
@@ -426,7 +427,7 @@
 
 
         try {
-            debugger
+            //debugger
             if (!doesStringListExist("words")) {
                 setTimeout(function () {
 
@@ -459,7 +460,7 @@
         }
 
         function loadResult() {
-            debugger
+            //debugger
             setupDropdown();
             //processWords().start();
             document.getElementById("answer_dic").click();
@@ -498,7 +499,7 @@
             document.getElementById("word").innerText = "Ready!"
         }
 
-        debugger
+        //debugger
         //Definition related ////////////////////////
         const apiKey = 'AIzaSyATlXh4_bFN2PR3ye-wu2Aqusjgy-IMp-Y';
         const cx = '2644d07aa4a1f41e9';
@@ -545,16 +546,41 @@
             https://www.dictionaryapi.com/api/v3/references/sd4/json/baseball?key=8113ce9c-c667-48c6-b4fa-cfeef8663df9
             */
 
+            const defSource2 = `https://www.dictionaryapi.com/api/v3/references/sd4/json/${word}?key=8113ce9c-c667-48c6-b4fa-cfeef8663df9`;
+            console.log(defSource2);
+
             try {
+
+                //defSource2
+                const response2 = await fetch(defSource2);
+                //const data2 = await response2;
+                const data2 = await response2.json();
+                debugger
+
+                var defStringBuilder = `[${word}] `;
+                data2.forEach(elm => {
+                    defStringBuilder += `\n${elm.fl} > \n* ${elm.shortdef} \n`;
+                });
+                return defStringBuilder;
+
+                // if (data2.items === undefined && data2.error.code === 429) {
+                //     return data2.error.message;
+                // } else {
+                // const definition = data2.items[0].snippet;
+                //     return `${definition}`;
+                // }
+
+                //defSource1
                 const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.items === undefined && data.error.code === 429) {
-                return data.error.message;
+                    return data.error.message;
                 } else {
                 const definition = data.items[0].snippet;
-                return `${definition}`;
+                    return `${definition}`;
                 }
+
             } catch (error) {
                 console.error(error);
                 return "Error fetching definition"; // Handle errors gracefully
