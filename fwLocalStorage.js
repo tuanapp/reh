@@ -13,7 +13,8 @@ function saveStringList(list, key, overwrite = false) {
   function getStringList(key) {
     const storedList = localStorage.getItem(key);
     if (!storedList) return [];
-    return JSON.parse(storedList);
+    const parsedList = JSON.parse(storedList);
+    return [...new Set(parsedList)]; // Remove duplicates
   }
   
   function doesStringListExist(key) {
