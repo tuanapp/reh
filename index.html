@@ -311,8 +311,15 @@
             questionElement.appendChild(questionTextSpan);
 
             var answerInput = document.createElement("input");
-            answerInput.type = "number";
+            answerInput.type = "tel";
             answerInput.className = "answer-input";
+            answerInput.pattern = "^-?[0-9]*$"; // Allow only numbers and minus sign
+            // Add an event listener to validate the input
+            answerInput.addEventListener("input", function() {
+                if (!/^-?\d*$/.test(this.value)) {
+                    this.value = this.value.slice(0, -1);
+                }
+            });
             questionElement.appendChild(answerInput);
 
             return questionElement;
