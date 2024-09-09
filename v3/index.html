@@ -73,6 +73,7 @@
         function filter(key, list){
             //RESET
             words = filterDifficultWords(key, list);
+            updateCount();
             currentWordIndex = 0;
             correctAnswers = [];
             incorrectAnswers = [];
