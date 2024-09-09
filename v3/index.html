@@ -415,7 +415,7 @@
             showDefinition(correctAnswer, definition, _postfix);
 
             let result = document.getElementById("result");
-            if (userAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
+            if (userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()) {
                 result.innerHTML = "Correct!";
                 result.style.color = "green"
                 correctAnswers.push(userAnswer);
