@@ -13,11 +13,23 @@
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init({
+                publicKey: "RGPQoQ6jxJNvAGxOy",
+            });
+        })();
+    </script>
 </head>
 
 <body>
+
     <div id="maintitle">
-        <h3>Word Game v3.2</h3>
+        <h3>Word Game v4</h3>
     </div>
     <span id="wordCount"></span>
     <select id="myDropdown">
@@ -35,8 +47,6 @@
 
     <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" />
     forceExternalTextToSpeach
-
-    
 
     <div id="result"></div>
 
@@ -60,7 +70,7 @@
 
     <script>
 
-        var words = []; //["apple", "banana", "cherry", "orange", "pear"];
+        var words = [];
         var allWords = [];
         var missedWords = [];
         var apiCallRequests = 0;
@@ -157,34 +167,12 @@
             document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests} ${log}`;
         }
 
-        /*let count = 0;
-        function processWords() {
-
-            if(words.length != 0)
-            {
-                const intervalId = setInterval(() => {
-                  if (count > 5) {
-                    clearInterval(intervalId); // stop the loop after processing the word 5 times
-                    return;
-                  }
-
-                  speakWord(words[currentWordIndex]);
-                  count++;
-                  processWords();
-                }, 1000);
-            }
-        }
-*/
-
-        //let readTimes = 0;
-
         let count = 0;
         let processWord = null;
         let intervalId = null;
         let initialTimeout = null;
         let voice = "US English Female";
         function processWords() {
-            //let currentIndex = 0;
             let rate = 0.6;
 
             processWord = () => {
@@ -272,11 +260,6 @@
             _words.shift();
             const indexOfHash = _words.findIndex(item => item.startsWith('#'));
             const selectedItems = _words.slice(0, indexOfHash >= 0 ? indexOfHash : array.length);
-            // let initialCount = words;
-            // words.shift();
-            // nextSectionStart = words.indexOf(a=>a.startsWith('#'));
-            // var selectedWordCount = 
-            // words.splice(nextSectionStart, words.length - )
             return selectedItems;
         }
 
@@ -329,33 +312,6 @@
                     function () {
                         this.classList.add('studied');
                         this.classList.add('focused');
-
-                        //
-                        // activeStudyWord = w;
-                        //debugger
-                        
-                        /*
-                        getDefinitionAsync(w, 'meaning')
-                            .then(definition => {
-                                Toastify({
-                                    text: definition,
-                                    duration: 30000,
-                                    destination: "https://github.com/apvarun/toastify-js",
-                                    newWindow: true,
-                                    close: true,
-                                    gravity: "top", // `top` or `bottom`
-                                    position: "left", // `left`, `center` or `right`
-                                    stopOnFocus: true, // Prevents dismissing of toast on hover
-                                    style: {
-                                        background: "linear-gradient(to right, #00b09b, #96c93d)",
-                                    },
-                                    onClick: function(){} // Callback after click
-                                    }).showToast();
-                                    showDefinition(w, definition); //getDefinition(w);
-                            })
-                            .catch(error => {
-                                console.error(error);
-                        });*/
 
                         getDefinitionAsync(w, _postfix)
                             .then(definition => {
@@ -446,8 +402,57 @@
             updateAnswers();
             document.getElementById("answer_dic").value = "";
 
-            currentWordIndex++;
+            currentWordIndex++;        
+            if(currentWordIndex === words.length)
+            {
+                console.log('Report: ' + incorrectAnswers);    
+                alert('Report: ' + incorrectAnswers);    
+                sendEmail();
+            }
             processWords().next();
+        }
+
+        function sendEmail()
+        {
+            debugger
+            // Prepare the email content
+            const emailParams = {
+                from_name: 'Rehaab',
+                to_name: "Admin", // Replace with the recipient's name
+                to_email: "kdx.shaggy@gmail.com", // Replace with the recipient's email
+                subject: "Word Game Report from",
+                message: `Here is the report of your session:\n\nCorrect Answers: ${correctAnswers.length}\nIncorrect Answers: ${incorrectAnswers.length}\n\nDetails:\n${incorrectAnswers.join('\n')}`
+            };
+
+            debugger
+            // Send the email using EmailJS
+            emailjs.send("service_qlmiznm", "template_1b1sx9n", emailParams)
+                .then(response => {
+                    console.log("Email sent successfully!", response.status, response.text);
+                    Toastify({
+                        text: "Report emailed successfully!",
+                        duration: 5000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "linear-gradient(to right, #00b09b, #96c93d)",
+                        },
+                    }).showToast();
+                })
+                .catch(error => {
+                    console.error("Failed to send email:", error);
+                    Toastify({
+                        text: "Failed to send report email.",
+                        duration: 5000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                        },
+                    }).showToast();
+                });
         }
 
         function pushToWebhook(missedWord)
@@ -545,7 +550,7 @@
                 const selectedIndex = dropdown.selectedIndex;
                 const options = dropdown.options;
 
-                debugger
+                //debugger
 
                 //remove the below segments
                 words  =  getStringList("words"); // allWords;
@@ -607,9 +612,9 @@
         //getDefinition('apple');
 
         async function getDefinitionAsync(word, postfix) {
-debugger
+//debugger
             //1. Google
-            const q = `${word} ${postfix}`;
+            const q = postfix ? `${word} ${postfix}` : word;
             const defSource1 = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
             console.log(defSource1);
 
