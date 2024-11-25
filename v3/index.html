@@ -55,6 +55,9 @@
         <ul id="incorrectList"></ul>
     </div>
 
+    <!-- Add a new element to display the counter -->
+    <div id="studyCounterDisplay">Study Button Clicked: 0 times</div>
+
     <script>
 
         var words = []; //["apple", "banana", "cherry", "orange", "pear"];
@@ -69,6 +72,7 @@
         var forceExternalTextToSpeach = false;
         var activeStudyWord = "";
         var _postfix = 'meaning';
+        let studyCounter = 0; // Add a counter variable for tracking the number of clicks on the "Study" button
 
         function filter(key, list){
             //RESET
@@ -400,6 +404,11 @@
                 ul.appendChild(li);
             })
             std.appendChild(ul);
+
+
+            // Increment the counter and update the display
+            studyCounter++;
+            document.getElementById("studyCounterDisplay").innerText = `Study Button Clicked: ${studyCounter} times`;
         }
 
         function checkAnswer() {
