@@ -14,6 +14,7 @@ function sendEmail(correctAnswers, incorrectAnswers, studyCounter) {
         \n\nstudyCounter:\n${studyCounter}`
     };
 
+    debugger
     // Send the email using EmailJS
     emailjs.send("service_qlmiznm", "template_1b1sx9n", emailParams)
         .then(response => {
@@ -30,9 +31,9 @@ function sendEmail(correctAnswers, incorrectAnswers, studyCounter) {
             }).showToast();
         })
         .catch(error => {
-            console.error("Failed to send email:", error);
+            console.error("Failed to send email:", JSON.stringify(error));
             Toastify({
-                text: "Failed to send report email.",
+                text: "Failed to send report email. "+ JSON.stringify(error),
                 duration: 5000,
                 close: true,
                 gravity: "top",

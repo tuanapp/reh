@@ -49,7 +49,7 @@
 <body>
 
     <div id="maintitle">
-        <h3>Word Game v4</h3>
+        <h3>Word Game v4.103</h3>
     </div>
     <span id="wordCount"></span>
     <select id="myDropdown">
@@ -142,6 +142,7 @@
                     _rate = 0.3;
 
                 let wordEl = document.getElementById("word");
+                console.log('[tuan] Current Browser Agent is: '+ navigator.userAgent);
                 // Check if the user is using the Tizen Browser
                 if (navigator.userAgent.indexOf('Tizen') !== -1 || testTvMode) {
                     console.log('User is using the Tizen Browser'); //alert('Tizen');
@@ -171,9 +172,15 @@
                     //msg.pitch = 0;
                     console.log(`${randomIndex} ${msg.voice} rate:${msg.rate} pitch:${msg.pitch}`);
                     window.speechSynthesis.speak(msg);
-                } else {
+                }
+                 else if (typeof AndroidTTS !== 'undefined' && AndroidTTS.speak) {
+                        voiceProvider = 'AndroidTTS';
+                        AndroidTTS.speak(word, _rate);
+                 }
+                 else {
                     voiceProvider = "NONE!";
                 }
+                console.log('[tuan] voiceProvider is ' + voiceProvider);
             }
             catch (err) {
                 responsiveVoice_apiRequests--;
@@ -471,6 +478,7 @@
                         .catch(error => {
                             // Handle any errors that occur during the request
                             console.error('Error:', error);
+                            alert(error);
                         });
 
                 }, 2000);
