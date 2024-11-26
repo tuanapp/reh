@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Game</title>
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
+    <script src="../fwLocalStorage.js"></script>
+    <script src="../helper.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+
+<body>
+    <div id="maintitle">
+        <h3>Word Game v3.2</h3>
+    </div>
+    <div>
+        <span id="wordCount"></span>
+        <select id="myDropdown">
+            <option value="">Select an option</option>
+        </select>
+    </div>
+    <p>Listen to the word and enter it below:</p>
+    <div id="word"></div>
+    <div>
+        <button id="startBtn" onclick="startProgram()">Start</button>
+        <button id="btnReadAll" onclick="readAll()">Read All</button>
+        <button id="read" onclick="readWord()">Read</button>
+        <input type="text" id="answer_dic" name="answer_dic" autofocus>
+        <button onclick="checkAnswer()">Submit</button>
+        <button id="studyBtn" onclick="study()">Study</button>
+        <button id="clearCache" onclick="deleteStringList('words')">Clear Cache</button>
+        <button id="filterDifficultWords" onclick="filter('words', missedWords)">Filter Difficult Words</button>
+    </div>
+    <div>
+        <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" />
+        <label for="forceExternalTextToSpeach">Force External Text-to-Speech</label>
+    </div>
+    <div id="result"></div>
+    <div id="def">
+        <div id="definition"></div>
+        <iframe id="definitionFrame" title="Definition" style="width: 70%; height: 500px; float: right;"></iframe>
+    </div>
+    <div id="study"></div>
+    <div id="answers">
+        <div id="correctAnswers">
+            <h6>Correct</h6>
+            <ul id="correctList"></ul>
+        </div>
+        <div id="incorrectAnswers">
+            <h6>Incorrect</h6>
+            <ul id="incorrectList"></ul>
+        </div>
+    </div>
+    <div id="studyCounterDisplay">Study Button Clicked: 0 times</div>
+
+    <script>
+        const words = [];
+        const allWords = [];
+        const missedWords = [];
+        const correctAnswers = [];
+        const incorrectAnswers = [];
+        let studyCounter = 0;
+        let currentWordIndex = 0;
+
+        // Core Functions
+        const isForceExternal = () => document.querySelector("#forceExternalTextToSpeach").checked;
+
+        const updateCount = () => {
+            document.getElementById("wordCount").innerText = words.length;
+        };
+
+        const speakWord = (word, rate = 0.4, voice = "UK English Female") => {
+            if (!word || word.startsWith('#')) return;
+            const wordElement = document.getElementById("word");
+
+            if (isForceExternal() || navigator.userAgent.includes('Tizen')) {
+                responsiveVoice.speak(word, voice, { pitch: 1, rate });
+            } else if ('speechSynthesis' in window) {
+                const synth = window.speechSynthesis;
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.rate = Math.max(rate, 0.3);
+                utterance.voice = synth.getVoices()[0]; // Default voice
+                synth.speak(utterance);
+            } else {
+                console.error("No speech synthesis available.");
+            }
+
+            wordElement.innerText = `Speaking: ${word}`;
+        };
+
+        const readWord = () => {
+            const readBtn = document.getElementById('read');
+            readBtn.disabled = true;
+            readBtn.style.background = 'black';
+
+            const lockDuration = isForceExternal() ? 10000 : 2000;
+            setTimeout(() => {
+                readBtn.disabled = false;
+                readBtn.style.background = '#4CAF50';
+            }, lockDuration);
+
+            speakWord(words[currentWordIndex]);
+        };
+
+        const startProgram = () => {
+            processWords().start();
+            document.getElementById('startBtn').style.visibility = 'hidden';
+        };
+
+        // Answer Management
+        const updateAnswers = () => {
+            const correctList = document.getElementById("correctList");
+            const incorrectList = document.getElementById("incorrectList");
+            correctList.innerHTML = correctAnswers.map(answer => `<li class="correct">${answer}</li>`).join('');
+            incorrectList.innerHTML = incorrectAnswers.map(answer => `<li class="incorrect">${answer}</li>`).join('');
+        };
+
+        const checkAnswer = () => {
+            const userAnswer = document.getElementById("answer_dic").value.trim().toLowerCase();
+            const correctAnswer = words[currentWordIndex].trim().toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                document.getElementById("result").innerText = "Correct!";
+                correctAnswers.push(userAnswer);
+            } else {
+                document.getElementById("result").innerText = `Incorrect. Correct answer: ${correctAnswer}`;
+                missedWords.push(correctAnswer);
+                incorrectAnswers.push(userAnswer);
+            }
+
+            updateAnswers();
+            currentWordIndex++;
+        };
+
+        // Definition Management
+        const getDefinitionAsync = async (word, postfix = 'meaning') => {
+            try {
+                const url = `https://www.dictionaryapi.com/api/v3/references/sd4/json/${word}?key=your-api-key`;
+                const response = await fetch(url);
+                const data = await response.json();
+                return data[0]?.shortdef?.join(', ') || "Definition not found.";
+            } catch (error) {
+                console.error(error);
+                return "Error fetching definition.";
+            }
+        };
+
+        const showDefinition = (word, definition) => {
+            document.getElementById("definition").innerText = definition;
+            document.getElementById("definitionFrame").src = `https://www.google.com/search?q=${word}+meaning`;
+        };
+
+        // Dropdown Setup
+        const setupDropdown = () => {
+            const dropdown = document.getElementById('myDropdown');
+            dropdown.innerHTML = words.map(word => `<option value="${word}">${word}</option>`).join('');
+            dropdown.addEventListener('change', () => {
+                const selectedWord = dropdown.value;
+                const selectedIndex = words.findIndex(word => word === selectedWord);
+                words.splice(0, selectedIndex + 1);
+                updateCount();
+            });
+            updateCount();
+        };
+
+        // Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("word").innerText = "Loading...";
+            setupDropdown();
+        });
+    </script>
+</body>
+
+</html>
