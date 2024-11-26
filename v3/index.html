@@ -8,6 +8,7 @@
     <!--#approach02 for old browsers https://responsivevoice.org/app/?email=kdx.shaggy%40gmail.com&vgo_ee=AEFExsNcr4yLxSxzlAO39dp3ZG%2FIOixhj0XJ443Cm1uK5bE5%3A6ZZXm8z2Q9wwz7Lk4hzBq4H%2FF836tKtE-->
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
     <script src="../fwLocalStorage.js"></script>
+    <script src="../fw.js"></script>
     <script src="../helper.js"></script>
     <link rel="stylesheet" href="../index.css"></link>
 
@@ -24,6 +25,7 @@
             });
         })();
     </script>
+    <script src="../js/emailService.js"></script>
 
 <script>
     let allowRefresh = false;
@@ -69,8 +71,7 @@
     <div id="result"></div>
 
     <div id="def">
-        <div id="definition">
-        </div>
+        <div id="definition"></div>
         <iframe id="definitionFrame" src="" title="def" style="width: 70%;height: 500px; float:right"></iframe>
     </div>
     <div id="study"></div>
@@ -412,56 +413,9 @@
             {
                 console.log('Report: ' + incorrectAnswers);    
                 alert('Report: ' + incorrectAnswers);    
-                sendEmail();
+                sendEmail(correctAnswers, incorrectAnswers, studyCounter);
             }
             processWords().next();
-        }
-
-        function sendEmail()
-        {
-            debugger
-            // Prepare the email content
-            const emailParams = {
-                from_name: 'Rehaab',
-                to_name: "Admin", // Replace with the recipient's name
-                to_email: "kdx.shaggy@gmail.com", // Replace with the recipient's email
-                subject: "Word Game Report from",
-                message: `Here is the report of your session:
-                \n\nCorrect Answers: ${correctAnswers.length}
-                \nIncorrect Answers: ${incorrectAnswers.length}
-                \n\nDetails:\n${incorrectAnswers.join('\n')}
-                \n\nstudyCounter:\n${studyCounter.join('\n')}`
-            };
-
-            debugger
-            // Send the email using EmailJS
-            emailjs.send("service_qlmiznm", "template_1b1sx9n", emailParams)
-                .then(response => {
-                    console.log("Email sent successfully!", response.status, response.text);
-                    Toastify({
-                        text: "Report emailed successfully!",
-                        duration: 5000,
-                        close: true,
-                        gravity: "top",
-                        position: "right",
-                        style: {
-                            background: "linear-gradient(to right, #00b09b, #96c93d)",
-                        },
-                    }).showToast();
-                })
-                .catch(error => {
-                    console.error("Failed to send email:", error);
-                    Toastify({
-                        text: "Failed to send report email.",
-                        duration: 5000,
-                        close: true,
-                        gravity: "top",
-                        position: "right",
-                        style: {
-                            background: "linear-gradient(to right, #ff5f6d, #ffc371)",
-                        },
-                    }).showToast();
-                });
         }
 
         function pushToWebhook(missedWord)
@@ -597,7 +551,12 @@
             let q = `${word} ${postfix}`;
             let defFrame = document.getElementById("definitionFrame");
             defFrame.src = `https://www.google.com/search?igu=1&ei=&q=${q}`
-            document.getElementById("definition").innerText = definition;
+
+            if(isNotPromise(definition))
+                document.getElementById("definition").innerText = definition;
+            else
+                document.getElementById("definition").innerText = "";
+
 
             // const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
             // fetch(url)

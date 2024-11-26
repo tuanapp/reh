@@ -93,3 +93,7 @@ function speakWord_Gen(word, _rate = 0.4, _voice = "UK English Female") {
     // var char = word.charAt(0);
     // document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests} ${log}`;
 }
+
+function isNotPromise(value) {
+    return Object.prototype.toString.call(value) !== "[object Promise]";
+  }
