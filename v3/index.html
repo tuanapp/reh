@@ -221,22 +221,18 @@
 
         //for manual button
         function readWord() {
-            var readBtn = document.getElementById('read');
-            readBtn.setAttribute('disabled', '')
-            readBtn.style.background = 'black';
+            const readBtn = document.querySelector('#read');
+            toggleButtonState(readBtn, true, 'black');
 
-            let btnLock = 10000;
-            if(!isForceExternal())
-            {
-                btnLock = 2000;
-            }
-
-            setTimeout(function () {
-                document.getElementById('read').removeAttribute('disabled');
-                readBtn.style.background = '#4CAF50';
-            }, btnLock);
+            const lockDuration = isForceExternal() ? 10000 : 2000;
+            setTimeout(() => toggleButtonState(readBtn, false, '#4CAF50'), lockDuration);
 
             speakWord(words[currentWordIndex]);
+        }
+
+        function toggleButtonState(button, isDisabled, bgColor) {
+            button.disabled = isDisabled;
+            button.style.background = bgColor;
         }
 
         function startProgram() {
@@ -297,17 +293,11 @@
 
             words.map((w) => {
                 var li = document.createElement("button");
-                //li.style = "";
+
                 li.classList = "btnword";
                 li.innerText = w;
                 if (w.indexOf('#') > -1) 	ul.appendChild(document.createElement("hr"));
-                //debugger                
-                //li.addEventListener("click", () => getDefinition(w));
-                // li.addEventListener("focus",
-                //     function () {
-                //         this.classList.add('focused');
-                //     }
-                // );
+
                 li.addEventListener("click",
                     function () {
                         this.classList.add('studied');
@@ -353,7 +343,6 @@
                     function () {
                         this.blur();
                         this.classList.remove('studied');
-                        //this.style.backgroundColor = '#3e8e41';
                     }
                 );
                 
@@ -371,10 +360,8 @@
 
             processWords().stop();
 
-            var userAnswer = document.getElementById("answer_dic").value; //.toLowerCase();
-            var correctAnswer = words[currentWordIndex];//.toLowerCase();
-
-            //if(word.indexOf('#') > -1){currentWordIndex++; return; }
+            var userAnswer = document.getElementById("answer_dic").value; 
+            var correctAnswer = words[currentWordIndex];
 
             //show definition
             var definition = getDefinitionAsync(correctAnswer);
@@ -551,7 +538,6 @@
                 const options = dropdown.options;
 
                 //debugger
-
                 //remove the below segments
                 words  =  getStringList("words"); // allWords;
 
@@ -612,7 +598,7 @@
         //getDefinition('apple');
 
         async function getDefinitionAsync(word, postfix) {
-//debugger
+            //debugger
             //1. Google
             const q = postfix ? `${word} ${postfix}` : word;
             const defSource1 = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${q}&num=1&start=1&gl=us&lr=lang_en&cr=countryUS&googlehost=google.com&alt=json`;
@@ -652,7 +638,7 @@
 
             } catch (error) {
                 console.error(error);
-                return "Error fetching definition"; // Handle errors gracefully
+                return "Error fetching definition";
             }
         }
 
