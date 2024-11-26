@@ -24,6 +24,24 @@
             });
         })();
     </script>
+
+<script>
+    let allowRefresh = false;
+
+    // Prevent refresh unless allowed
+    window.addEventListener("beforeunload", (event) => {
+      if (!allowRefresh) {
+        event.preventDefault();
+        event.returnValue = ""; // Some browsers require this for the dialog to show
+      }
+    });
+
+    // Function to allow refresh and reload the page
+    function refreshPage() {
+      allowRefresh = true;
+      location.reload(); // Reload the page
+    }
+  </script>
 </head>
 
 <body>
@@ -44,10 +62,10 @@
     <button id="studyBtn" onclick="study()">Study</button>
     <button id="clearCache" onclick="deleteStringList('words')">Clear-Cache</button>
     <button id="filterDifficultWords" onclick="filter('words', missedWords)">Filter Difficult Words</button>
-
+    <button onclick="refreshPage()">Refresh</button>
     <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" />
     forceExternalTextToSpeach
-
+    
     <div id="result"></div>
 
     <div id="def">
@@ -408,7 +426,11 @@
                 to_name: "Admin", // Replace with the recipient's name
                 to_email: "kdx.shaggy@gmail.com", // Replace with the recipient's email
                 subject: "Word Game Report from",
-                message: `Here is the report of your session:\n\nCorrect Answers: ${correctAnswers.length}\nIncorrect Answers: ${incorrectAnswers.length}\n\nDetails:\n${incorrectAnswers.join('\n')}`
+                message: `Here is the report of your session:
+                \n\nCorrect Answers: ${correctAnswers.length}
+                \nIncorrect Answers: ${incorrectAnswers.length}
+                \n\nDetails:\n${incorrectAnswers.join('\n')}
+                \n\nstudyCounter:\n${studyCounter.join('\n')}`
             };
 
             debugger
