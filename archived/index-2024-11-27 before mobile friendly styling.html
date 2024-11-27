@@ -1,239 +1,193 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <title>Grade 4 Math Questions</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        /* Reset default margin and padding */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: Arial, sans-serif;
             background-color: black;
+            /*#1f1f1f;*/
             color: #ffffff;
         }
 
         h2 {
             text-align: center;
-            margin: 20px 0;
         }
 
-        /* Navigation Buttons */
-        .nav-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 10px 0;
-        }
-
-        .nav-buttons .btn {
-            margin: 5px;
-            text-decoration: none;
-            color: white;
-        }
-
-        /* Form Styling */
         form {
             margin: 0 auto;
-            width: 90%;
-            max-width: 800px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .qrow {
-            flex: 1 1 calc(50% - 20px);
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid #ffffff;
-            border-radius: 5px;
-        }
-
-        @media screen and (max-width: 600px) {
-            .qrow {
-                flex: 1 1 100%;
-            }
+            width: 80%;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            color: cadetblue;
+            margin-bottom: 10px;
         }
 
         input[type="number"] {
-            width: 100%;
+            width: 100px;
             padding: 5px;
-            margin-top: 5px;
+            margin-left: 5px;
             background-color: lightgray;
             letter-spacing: 0.15em;
             font-weight: bold;
         }
 
-        /* Button Styling */
+        /* button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+        } */
+
+        .question {
+            margin: 20px auto;
+            text-align: center;
+            font-size: 20px;
+            letter-spacing: 0.15em;
+            color: aquamarine;
+        }
+
+        .answer-correct {
+            color: green;
+            padding-top: 3px;
+        }
+
+        .answer-incorrect {
+            color: red;
+            padding-top: 3px;
+        }
+
+        .answer-display {
+            background-color: #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        #questions-container {
+            color: white;
+            width: 450px;
+            margin: 0 auto;
+            padding-top: 10px;
+        }
+
+        .qrow {
+            text-align: left;
+            float: left;
+            padding-right: 5px;
+            border-right: solid;
+            padding-left: 5px;
+        }
+
         .btn {
+            margin-left: 5px;
             background-color: #FF69B4;
             border: none;
             color: white;
             padding: 10px 20px;
             text-align: center;
+            text-decoration: none;
+            display: inline-block;
             font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bolder;
-            margin: 10px;
-            display: inline-block;
-            text-decoration: none;
         }
 
         .btn:active {
             background-color: #a00083;
         }
 
-        /* Centered Content */
         .center {
             margin: 0 auto;
-            width: 90%;
-            max-width: 800px;
-        }
-
-        /* Questions Container */
-        #questions-container {
-            color: white;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding-top: 10px;
-        }
-
-        .question {
-            margin: 20px auto;
-            font-size: 20px;
-            letter-spacing: 0.15em;
-            color: aquamarine;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .question hr {
-            flex-basis: 100%;
-            border: none;
-            border-top: 1px solid #ffffff;
-            margin-bottom: 10px;
+            width: 80%;
         }
 
         .qlbl {
-            width: 100%;
+            padding-right: 30px;
+            float: left;
+            width: 100px;
             font-size: 15px;
+            text-wrap: nowrap;
             color: cadetblue;
-            margin-bottom: 5px;
         }
 
-        .question input[type="tel"] {
-            flex: 1;
-            padding: 5px;
-            margin-left: 10px;
-            background-color: lightgray;
-            letter-spacing: 0.15em;
-            font-weight: bold;
-        }
-
-        .answer-input.answer-correct {
-            border: 2px solid green;
-        }
-
-        .answer-input.answer-incorrect {
-            border: 2px solid red;
-        }
-
-        .answer-message {
-            padding-top: 3px;
-            font-size: 14px;
-        }
-
-        .answer-message.answer-correct {
-            color: green;
-        }
-
-        .answer-message.answer-incorrect {
-            color: red;
-        }
-
-        /* Task List */
         .task {
             margin-bottom: 10px;
             font-size: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
         }
 
         input[type="checkbox"] {
             margin-right: 5px;
         }
 
-        /* Responsive Font Sizes */
-        @media screen and (max-width: 600px) {
-            .question {
-                font-size: 16px;
-            }
-
-            .btn {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
+        .clear {
+            float: right;
         }
     </style>
 </head>
 
 <body>
-    <!-- Navigation Buttons -->
-    <div class="nav-buttons">
-        <a href="./v2/index.html" class="btn">Multiplication Time Game</a>
-        <a href="./v22/index.html" class="btn">Multiplication Range</a>
-        <a href="./v3/index.html" class="btn">Dictation</a>
-    </div>
+    <button>
+        <a href="./v2/index.html">Multiplication Time Game</a>
+    </button> <button><a href="./v22/index.html">Multiplication Range</a>    </button>
+    <button>
+        <a href="./v3/index.html" >Dictation</a>
+    </button> 
+    <!-- <a href="./v3/new/index.html">Dictation NEW</a>  | -->
+    <a href="https://github.com/tuanapp/reh/blob/main/index.html">repo</a> |
+    <a href="https://tuanapp.github.io/reh/">public url</a> |
+    
+    <link rel="stylesheet" href="./index.css"></link>
+
     <hr>
 
-    <h2>SmartyBoy Math Questions</h2>
+    <h2>Grade 4 Math Questions</h2>
 
-    <!-- Settings Form -->
     <form id="settings-form">
-        <div class="qrow">
+        <span class="qrow">
             <label for="addition-digits">Addition: Maximum Digits</label>
             <input type="number" id="addition-digits" min="2" value="3">
-        </div>
-        <div class="qrow">
+        </span>
+        <span class="qrow">
             <label for="subtraction-digits">Subtraction: Maximum Digits</label>
             <input type="number" id="subtraction-digits" min="1" value="3">
-        </div>
-        <div class="qrow">
+        </span>
+        <span class="qrow">
             <label for="multiplication-digits">Multiplication: Maximum Digits</label>
             <input type="number" id="multiplication-digits" min="1" value="3">
-        </div>
-        <div class="qrow">
+        </span>
+        <span class="qrow">
             <label for="division-digits">Division: Maximum Digits</label>
             <input type="number" id="division-digits" min="1" value="2">
-        </div>
+        </span>
         <button type="submit" class="btn">Generate Questions</button>
-        <button type="button" class="btn" onclick="resetApp()">Clear</button>
+
     </form>
+    <button class="btn clear" onclick="reset()">Clear</button>
+    <br>
     <hr>
 
     <div class="center">
         <div id="questions-container"></div>
+
+        <!-- <div id="answer-display" class="answer-display"></div> -->
         <hr>
-        <button id="check-answers" type="submit" class="btn" disabled>Check Answers</button>
+        <button id="check-answers" type="submit" class="btn">Check Answers</button>
 
         <h2>Daily Checklist</h2>
         <div class="task">
             <label>
                 <input type="checkbox">
-                Read 4 pages of Harry Potter
+                Read 4 pages of harry potter
             </label>
         </div>
         <div class="task">
@@ -245,7 +199,7 @@
         <div class="task">
             <label>
                 <input type="checkbox">
-                Do a page from Math Workbook
+                Do a page from Match Workbook
             </label>
         </div>
         <div class="task">
@@ -274,18 +228,51 @@
         function generateQuestions(additionDigits, subtractionDigits, multiplicationDigits, divisionDigits) {
             var questionsContainer = document.getElementById("questions-container");
             questionsContainer.innerHTML = "";
-            questionNum = 1; // Reset question number
 
             GenerateQuestionItem("Addition", additionDigits, questionsContainer, generateAdditionQuestion);
+
+            //test x type
             GenerateQuestionItem("AdditionX", additionDigits, questionsContainer, generateAdditionXQuestion);
+
+
+            /*var additionQuestion = generateAdditionQuestion(additionDigits);
+            additionQuestion = fetchQuestion("add", additionQuestion); //store
+            var additionElement = createQuestionElement("Addition", additionQuestion);
+            questionsContainer.appendChild(additionElement);*/
+
             GenerateQuestionItem("Subtraction", subtractionDigits, questionsContainer, generateSubtractionQuestion);
+
             GenerateQuestionItem("SubtractionX", subtractionDigits, questionsContainer, generateSubtractionXQuestion);
+
+
+            /*var subtractionQuestion = generateSubtractionQuestion(subtractionDigits);
+            subtractionQuestion = fetchQuestion("sub", subtractionQuestion);
+            var subtractionElement = createQuestionElement("Subtraction", subtractionQuestion);
+            questionsContainer.appendChild(subtractionElement);*/
+
+            //Mul
             GenerateQuestionItem("Multiplication1", 2, questionsContainer, generateMultiplicationQuestion);
             GenerateQuestionItem("Multiplication2", multiplicationDigits, questionsContainer, generateMultiplicationQuestion);
             GenerateQuestionItem("Multiplication3", 4, questionsContainer, generateMultiplicationQuestion);
+            /*var multiplicationQuestion2 = generateMultiplicationQuestion(multiplicationDigits);
+            multiplicationQuestion2 = fetchQuestion("mul2", multiplicationQuestion2);
+            var multiplicationElement2 = createQuestionElement("Multiplication", multiplicationQuestion2);
+            questionsContainer.appendChild(multiplicationElement2);*/
+
+            //Div
             GenerateQuestionItem("Division1", 1, questionsContainer, generateDivisionQuestion);
             GenerateQuestionItem("Division2", divisionDigits, questionsContainer, generateDivisionQuestion);
             GenerateQuestionItem("Division3", 3, questionsContainer, generateDivisionQuestion);
+
+            /*var divisionQuestion1 = generateDivisionQuestion(1);
+            divisionQuestion1 = fetchQuestion("div1", divisionQuestion1);
+            var divisionElement1 = createQuestionElement("Basic Division", divisionQuestion1);
+            questionsContainer.appendChild(divisionElement1);
+
+            var divisionQuestion2 = generateDivisionQuestion(divisionDigits);
+            divisionQuestion2 = fetchQuestion("div2", divisionQuestion2);
+            var divisionElement2 = createQuestionElement("Division", divisionQuestion2);
+            questionsContainer.appendChild(divisionElement2);*/
 
             setExpired();
         }
@@ -298,18 +285,26 @@
         }
 
         function createQuestionElement(questionType, questionText) {
+
             var questionElement = document.createElement("div");
             questionElement.className = "question";
 
             var hrElement = document.createElement("hr");
             questionElement.appendChild(hrElement);
 
-            var questionLabel = document.createElement("div");
-            questionLabel.textContent = `${questionNum}) ${questionType}: `;
+            //var qnum = document.createElement("span");
+            //const q = document.createTextNode(`(${questionNum}). `);
+            //qnum.appendChild(q);
+            //questionElement.appendChild(qnum);
+
+            var questionLabel = document.createElement("span");
+            //questionLabel.appendChild(q);
+            questionLabel.textContent = `${questionNum}) ` + questionType + ": ";
             questionLabel.className = "qlbl";
             questionElement.appendChild(questionLabel);
 
             questionNum++;
+
 
             var questionTextSpan = document.createElement("span");
             questionTextSpan.textContent = questionText;
@@ -319,8 +314,8 @@
             answerInput.type = "tel";
             answerInput.className = "answer-input";
             answerInput.pattern = "^-?[0-9]*$"; // Allow only numbers and minus sign
-            // Validate the input
-            answerInput.addEventListener("input", function () {
+            // Add an event listener to validate the input
+            answerInput.addEventListener("input", function() {
                 if (!/^-?\d*$/.test(this.value)) {
                     this.value = this.value.slice(0, -1);
                 }
@@ -339,7 +334,7 @@
         function generateAdditionXQuestion(digits) {
             var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
             var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
-            return "__ + " + number2 + " = " + number1;
+            return "__" + " + " + number2 + " = " + number1;
         }
 
         function generateSubtractionQuestion(digits) {
@@ -351,37 +346,50 @@
         function generateSubtractionXQuestion(digits) {
             var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
             var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
-            return "__ - " + number2 + " = " + number1;
+            return "__" + " - " + number2 + " = " + number1;            
         }
 
         function generateMultiplicationQuestion(digits) {
             var number1 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+            //var number2 = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+
             var range = [2, 3, 4, 5, 10];
-            var number2 = range[Math.floor(Math.random() * range.length)];
+            var number2 = range[Math.floor(Math.random() * range.length)]; // Select a random divisor from the given options
+
             return number1 + " × " + number2;
         }
 
         function generateDivisionQuestion(digits) {
+            //var divisor = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
             var quotient = Math.floor(Math.random() * (Math.pow(10, digits) - 1)) + 1;
+
+            //var dividend1 = Math.floor(Math.random() * 1001); // Generate a random dividend less than 1001
             var divisors = [2, 3, 4, 5, 10];
-            var divisor = divisors[Math.floor(Math.random() * divisors.length)];
+            var divisor = divisors[Math.floor(Math.random() * divisors.length)]; // Select a random divisor from the given options
+            //var quotient = Math.floor(dividend1 / divisor);
+            //number2 = divisor;
+
             var dividend = divisor * quotient;
             return dividend + " ÷ " + divisor;
         }
 
         document.getElementById("check-answers").addEventListener("click", function () {
             var answerInputs = document.getElementsByClassName("answer-input");
+            var answerDisplay = document.getElementById("answer-display");
+
+
+            //answerDisplay.innerHTML = "";
 
             for (var i = 0; i < answerInputs.length; i++) {
                 var answerInput = answerInputs[i];
-                var questionType = answerInput.parentNode.querySelector(".qlbl").textContent;
-                var question = answerInput.parentNode.querySelector("span").textContent;
+                var questionType = answerInput.parentNode.firstChild.nextSibling.textContent;
+                debugger
+                var question = answerInput.parentNode.firstChild.nextSibling.nextSibling.textContent;
                 var userAnswer = parseInt(answerInput.value);
                 var correctAnswer = evaluateQuestion(questionType, question);
 
                 var answerElement = document.createElement("div");
-                answerElement.classList.add("answer-message");
-
+                debugger
                 if (userAnswer === correctAnswer) {
                     answerInput.classList.add("answer-correct");
                     answerElement.textContent = "Correct!";
@@ -393,24 +401,27 @@
                 }
 
                 answerInput.after(answerElement);
+                //answerDisplay.appendChild(answerElement);
             }
 
             // Disable the button after checking the answers
             document.getElementById("check-answers").disabled = true;
+
         });
 
         function evaluateQuestion(questionType, question) {
-            var operands = question.split(/\+|\-|\×|\÷|\=/).map(function (item) {
-                return parseInt(item.trim()) || 0;
-            });
-            var operand1 = operands[0];
-            var operand2 = operands[1];
-            var operand3 = operands[2] || 0;
+            debugger
+            var operands = question.split(/\+|\-|\×|\÷|\=/);
+            var operand1 = parseInt(operands[0]);
+            var operand2 = parseInt(operands[1]);
+            var operand3 = 0
+            debugger
+            if(operands.length>2) operand3 = parseInt(operands[2]);
 
             if (questionType.includes("AdditionX")) {
                 return operand3 - operand2;
             } else if (questionType.includes("SubtractionX")) {
-                return operand3 + operand2;
+                return operand3 + operand2;                
             } else if (questionType.includes("Addition")) {
                 return operand1 + operand2;
             } else if (questionType.includes("Subtraction")) {
@@ -422,26 +433,31 @@
             }
         }
 
-        /* Local Storage Mechanism */
-        function resetApp() {
-            localStorage.clear();
-            //location.reload();
+
+        /* storage machanism */
+        function reset() {
+            debugger
+            localStorage.removeItem('add'); localStorage.removeItem('expirationDate');
         }
 
         function fetchQuestion(key, val) {
             if (!isRandomValueExpired(key)) {
                 var storedValue = localStorage.getItem(key);
+                //console.log('Stored random value:', randomValue);
                 return storedValue;
             } else {
                 storeRandomValue(key, val);
                 return val;
+                //console.log('Random value expired or not set.');
             }
         }
 
+        // Store the random value in localStorage
         function storeRandomValue(key, val) {
             localStorage.setItem(key, val);
         }
 
+        // Check if the stored random value is expired
         function isRandomValueExpired(key) {
             var expirationDate = localStorage.getItem('expirationDate');
             if (expirationDate) {
@@ -455,7 +471,30 @@
             expirationDate.setDate(expirationDate.getDate() + 1);
             localStorage.setItem('expirationDate', expirationDate.getTime());
         }
+
+        // Retrieve the stored random value
+        function getStoredRandomValue(key) {
+            if (!isRandomValueExpired(key)) {
+                var storedValue = localStorage.getItem(key);
+                console.log('Stored random value:', randomValue);
+                return storedValue;
+            } else {
+                console.log('Random value expired or not set.');
+            }
+        }
+
+
     </script>
+
+
+
+
+    <!-- <iframe src="./v2/index.html" title="game" style="width: 100%;height: 500px;"></iframe>
+
+    <iframe src="./v3/index.html" title="game2" style="width: 100%;height: 500px;"></iframe> -->
+
+
+
 </body>
 
 </html>

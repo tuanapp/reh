@@ -3,6 +3,7 @@
 function sendEmail(correctAnswers, incorrectAnswers, studyCounter) {
     // Prepare the email content
     const emailParams = {
+        datetime: new Date(),
         from_name: 'Rehaab',
         to_name: "Admin", // Replace with the recipient's name
         to_email: "kdx.shaggy@gmail.com", // Replace with the recipient's email
