@@ -1,106 +1,173 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Multiplication Game</title>
-	<style>
-body {
-			background-color: #1c1c1c;
-			color: #e6e6e6;
-			font-family: Arial, sans-serif;
-			text-align: center;
-		}
+    <meta charset="UTF-8">
+    <title>Multiplication Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Reset default margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-		h1 {
-			margin-top: 50px;
-		}
+        body {
+            background-color: #1c1c1c;
+            color: #e6e6e6;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
 
-		#problem {
-			font-size: 48px;
-			margin-top: 20px;
-		}
+        h1 {
+            margin-top: 20px;
+            font-size: 2em;
+        }
 
-		input[type="number"] {
-			font-size: 24px;
-			margin-top: 20px;
-			padding: 10px;
-			width: 100px;
-			background-color: #2d2d2d;
-			color: #e6e6e6;
-			border: none;
-			border-radius: 5px;
-		}
+        #game-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-		input[type="number"]:focus {
-			outline: none;
-			box-shadow: 0 0 5px #4CAF50;
-		}
+        #problem {
+            font-size: 3em;
+            margin-top: 20px;
+            word-wrap: break-word;
+        }
 
-		button {
-			margin-top: 20px;
-			padding: 10px;
-			font-size: 24px;
-			background-color: #4CAF50;
-			color: #e6e6e6;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			transition: background-color 0.3s;
-		}
+        input[type="number"] {
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            max-width: 200px;
+            background-color: #2d2d2d;
+            color: #e6e6e6;
+            border: none;
+            border-radius: 5px;
+        }
 
-		button:hover {
-			background-color: #3e8e41;
-		}
+        input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px #4CAF50;
+        }
 
-		#result {
-			font-size: 24px;
-			margin-top: 20px;
-		}
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #4CAF50;
+            color: #e6e6e6;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-		#score {
-			font-size: 36px;
-			margin-top: 50px;
-			background-color: #2d2d2d;
-			padding: 10px;
-			border-radius: 5px;
-			display: inline-block;
-		}
+        button:hover {
+            background-color: #3e8e41;
+        }
 
-		#timer {
-			font-size: 24px;
-			margin-top: 20px;
-			display: inline-block;
-			background-color: #2d2d2d;
-			padding: 10px;
-			border-radius: 5px;
-		}
-	</style>
+        #result {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        #score {
+            font-size: 2em;
+            margin-top: 20px;
+            background-color: #2d2d2d;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        #timer {
+            font-size: 1.5em;
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #2d2d2d;
+            padding: 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+        #motivation img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        #incorrect-questions, #history {
+            text-align: left;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        #incorrect-questions h2, #history h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        #incorrect-questions p, #history p {
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            #problem {
+                font-size: 2em;
+            }
+
+            input[type="number"] {
+                font-size: 1.2em;
+                max-width: 100%;
+            }
+
+            button {
+                font-size: 1em;
+                padding: 8px 16px;
+            }
+
+            #score, #timer {
+                font-size: 1.2em;
+                padding: 8px;
+            }
+
+            #result {
+                font-size: 1.2em;
+            }
+        }
+    </style>
 </head>
 <body>
-	<div style="float: left; max-width: 200px; position: absolute">
-		<h3>Multiplication Game</h3><span>Enter the correct answer for each multiplication problem:</span>
-	</div>
-	
-	<div>
-		<div id="problem"></div>
-		<input type="number" id="answer" name="answer" autofocus>
-		<button onclick="checkAnswer()">Submit</button>
-		<div id="result"></div>
-		<div id="score">0</div>
+    <h1>Multiplication Game</h1>
+    <p>Enter the correct answer for each multiplication problem:</p>
 
-		<div id="motivation"></div>
+    <div id="game-container">
+        <div id="problem"></div>
+        <input type="number" id="answer" name="answer" autofocus>
+        <button onclick="checkAnswer()">Submit</button>
+        <div id="result"></div>
+        <div id="score">Score: 0/0</div>
+        <div id="timer">Time: 0s</div>
 
-		Time:<div id="timer"></div> s
-		<button class="btn clear" onclick="reset()">Clear</button>
-		<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
-		<div id="history"></div>
-	</div>
-	<script>
-		var score = 0;
-		var numQuestions = 0;
-		var numCorrect = 0;
-		var startTime = new Date().getTime();
-		var incorrectQuestions = []; // Array to store incorrect questions
+        <div id="motivation"></div>
+
+        <button class="btn clear" onclick="reset()">Clear</button>
+
+        <div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
+        <div id="history"></div>
+    </div>
+
+    <script>
+        var score = 0;
+        var numQuestions = 0;
+        var numCorrect = 0;
+        var startTime = new Date().getTime();
+        var incorrectQuestions = []; // Array to store incorrect questions
 
         var motivationImages = [
             // Add URLs of motivation images here
@@ -108,38 +175,37 @@ body {
             "https://media.tenor.com/Trxl3FfZoIAAAAAC/very-good.gif",
             "https://cdn.quotesgram.com/img/96/84/209882752-star-great-job.jpg",
             // ...
-		];
+        ];
+
         function displayMotivationImage() {
             var randomIndex = Math.floor(Math.random() * motivationImages.length);
             var imageUrl = motivationImages[randomIndex];
             var imgElement = document.createElement("img");
-			imgElement.src = imageUrl;
-			imgElement.style.maxWidth = '100px';
-			var mot = document.getElementById('motivation');
+            imgElement.src = imageUrl;
+            var mot = document.getElementById('motivation');
             mot.appendChild(imgElement);
         }
 
-		debugger
-		var answerHistory = [];
-		var storedHistory = localStorage.getItem("history");
-		// Check if storedHistory is not null or undefined
-		if (storedHistory) {
-			answerHistory = JSON.parse(storedHistory);
-		}
+        var answerHistory = [];
+        var storedHistory = localStorage.getItem("history");
+        // Check if storedHistory is not null or undefined
+        if (storedHistory) {
+            answerHistory = JSON.parse(storedHistory);
+        }
 
-		function generateProblem() {
-			var x = Math.floor(Math.random() * 4) + 6; // Generate a random number between 6 and 9
-			var y = Math.floor(Math.random() * 9) + 2; // Generate a random number between 2 and 10
-			var problem = x + " x " + y + " = ";
-			document.getElementById("problem").innerHTML = problem;
-			document.getElementById("answer").value = "";
-			document.getElementById("answer").focus();
-		}
+        function generateProblem() {
+            var x = Math.floor(Math.random() * 4) + 6; // Generate a random number between 6 and 9
+            var y = Math.floor(Math.random() * 9) + 2; // Generate a random number between 2 and 10
+            var problem = x + " x " + y + " = ";
+            document.getElementById("problem").innerHTML = problem;
+            document.getElementById("answer").value = "";
+            document.getElementById("answer").focus();
+        }
 
-		function checkAnswer() {
-			var userAnswer = document.getElementById("answer").value;
+        function checkAnswer() {
+            var userAnswer = document.getElementById("answer").value;
 
-			if (userAnswer !== "") {
+            if (userAnswer !== "") {
                 var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
                 var y = parseInt(document.getElementById("problem").innerHTML.split(" ")[2]);
                 var correctAnswer = x * y;
@@ -159,8 +225,6 @@ body {
                 document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
                 setTimeout(generateProblem, 500);
 
-                debugger
-
                 // Display incorrect questions in the div
                 var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
                 incorrectQuestionsDiv.innerHTML = "<h2>Incorrect Questions:</h2>";
@@ -173,52 +237,43 @@ body {
                 // Store incorrect questions in local storage
                 localStorage.setItem("history", JSON.stringify(answerHistory));
                 // Display incorrect questions in the div
-                var incorrectQuestionsDiv = document.getElementById("history");
-                incorrectQuestionsDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
-                answerHistory.forEach(element => {
-                    var question = document.createElement("p");
-                    question.textContent = element;
-                    incorrectQuestionsDiv.appendChild(question);
-                });
-			}
-		}
-		
-		document.getElementById("answer").addEventListener("keydown", function(event) {
-			if (event.keyCode === 13) {
-				event.preventDefault();
-				checkAnswer();
-			}
-		});
-		
-		generateProblem();
+                var historyDiv = document.getElementById("history");
+                historyDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
+                historyDiv.innerHTML += answerHistory.map(q => `<p>${q}</p>`).join('');
+            }
+        }
 
-		// Update timer every second
-		clearInterval(timerInterval);
-		updateTimer();
-		var timerInterval = setInterval(updateTimer, 1000);
+        document.getElementById("answer").addEventListener("keydown", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                checkAnswer();
+            }
+        });
 
-		function updateTimer()
-		{
-			var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
-			document.getElementById("timer").innerHTML = elapsedTime;
+        generateProblem();
 
-			//document.getElementById("answer").disabled = true;
-            if (parseInt(document.getElementById("timer").innerText) > 100 && document.getElementById("answer").style.background != "red") //100 - 10
-			{
-				document.getElementById("answer").disabled = true;
-				document.getElementById("answer").style.background = "red";
-				
-                if (score > 12) { //12 - 1
+        // Update timer every second
+        var timerInterval = setInterval(updateTimer, 1000);
+
+        function updateTimer() {
+            var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
+            document.getElementById("timer").innerHTML = "Time: " + elapsedTime + "s";
+
+            if (elapsedTime > 100 && document.getElementById("answer").style.background != "red") {
+                document.getElementById("answer").disabled = true;
+                document.getElementById("answer").style.background = "red";
+
+                if (score > 12) {
                     displayMotivationImage();
                 }
-			}
-		}
+            }
+        }
 
-		/* storage machanism */
-		function reset() {
-			debugger
-			localStorage.removeItem('history');
-		}
-	</script>
+        /* Storage mechanism */
+        function reset() {
+            localStorage.removeItem('history');
+            location.reload();
+        }
+    </script>
 </body>
 </html>
