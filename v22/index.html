@@ -2,313 +2,201 @@
 <html>
 
 <head>
-	<meta charset="UTF-8">
-	<title>Multiplication Game 8 & 9</title>
-	<style>
-		body {
-			background-color: #1c1c1c;
-			color: #e6e6e6;
-			font-family: Arial, sans-serif;
-			text-align: center;
-		}
-
-		h1 {
-			margin-top: 50px;
-		}
-
-		#problem {
-			font-size: 48px;
-			margin-top: 20px;
-		}
-
-		input[type="tel"] {
-			font-size: 24px;
-			margin-top: 20px;
-			padding: 10px;
-			width: 100px;
-			background-color: #2d2d2d;
-			color: #e6e6e6;
-			border: none;
-			border-radius: 5px;
-		}
-
-		input[type="tel"]:focus {
-			outline: none;
-			box-shadow: 0 0 5px #4CAF50;
-		}
-
-		button {
-			margin-top: 20px;
-			padding: 10px;
-			font-size: 24px;
-			background-color: #4CAF50;
-			color: #e6e6e6;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			transition: background-color 0.3s;
-		}
-
-		button:hover {
-			background-color: #3e8e41;
-		}
-
-		#result {
-			font-size: 24px;
-			margin-top: 20px;
-		}
-
-		#score {
-			font-size: 36px;
-			margin-top: 50px;
-			background-color: #2d2d2d;
-			padding: 10px;
-			border-radius: 5px;
-			display: inline-block;
-		}
-
-		#timer {
-			font-size: 24px;
-			margin-top: 20px;
-			display: inline-block;
-			background-color: #2d2d2d;
-			padding: 10px;
-			border-radius: 5px;
-		}
-	</style>
-
+    <meta charset="UTF-8">
+    <title>Multiplication Game 8 & 9</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Link to External CSS -->
+    <link rel="stylesheet" href="../css/sb.css">
+    <!-- Include your external scripts here -->
+    <!-- <script src="../fw.js"></script>
+    <script src="../fwLocalStorage.js"></script> -->
 </head>
 
 <body>
-	<!-- <script async src="../fw.js"></script>
-	<script async src="../fwLocalStorage.js"></script> -->
-	<script src="../fw.js"></script>
-	<script src="../fwLocalStorage.js"></script>
-	<div style="float: left; max-width: 200px; position: absolute">
-		<h3>Multiplication Game Range</h3><span>Enter the correct answer for each multiplication problem:</span>
-		<div id="pendingqlist"></div>
-	</div>
+    <!-- Home Button -->
+    <a href="../index.html" class="home-button">&#8962;</a>
 
-	<div>
-		<div id="problem"></div>
-		<input type="tel" id="answer" name="answer" autofocus min="0" max="99" maxlength="2">
-		<button id="btnSubmit" onclick="checkAnswer()">Submit</button>
-		<div id="result"></div>
-		<div id="score">0</div>
+    <h1>Multiplication Game Range</h1>
+    <p>Enter the correct answer for each multiplication problem:</p>
 
-		<div id="motivation"></div>
+    <div id="game-container">
+        <div id="problem"></div>
+        <input type="number" id="answer" name="answer" autofocus min="0" max="99" maxlength="2">
+        <button id="btnSubmit" onclick="checkAnswer()">Submit</button>
+        <div id="result"></div>
+        <div id="score">Score: 0/0</div>
+        <div id="timer">Time: 0s</div>
+        <div id="motivation"></div>
+        <button class="btn clear" onclick="reset()">Clear</button>
 
-		Time:<div id="timer"></div> s
-		<button class="btn clear" onclick="reset()">Clear</button>
-		<div id="incorrect-questions"></div> <!-- New div to display incorrect questions -->
-		<div id="elmScoreHistory"></div>
-		<div id="history"></div>
-	</div>
-	<script>
-		var freez = false;
-		var score = 0;
-		var numQuestions = 0;
-		var numCorrect = 0;
-		var startTime = new Date().getTime();
-		var incorrectQuestions = []; // Array to store incorrect questions
+    <!-- Pending Questions List -->
+    <div id="pendingqlist-container">
+        <h2>Remaining Questions:</h2>
+        <div id="pendingqlist"></div>
+    </div>
 
-		var motivationImages = [
-			// Add URLs of motivation images here
-			"https://thumbs.dreamstime.com/z/vector-good-job-symbol-29548614.jpg",
-			"https://media.tenor.com/Trxl3FfZoIAAAAAC/very-good.gif",
-			"https://cdn.quotesgram.com/img/96/84/209882752-star-great-job.jpg",
-			// ...
-		];
-		function displayMotivationImage() {
-			var randomIndex = Math.floor(Math.random() * motivationImages.length);
-			var imageUrl = motivationImages[randomIndex];
-			var imgElement = document.createElement("img");
-			imgElement.src = imageUrl;
-			imgElement.style.maxWidth = '100px';
-			var mot = document.getElementById('motivation');
-			mot.appendChild(imgElement);
-		}
+        <div id="incorrect-questions"></div>
+        <div id="elmScoreHistory"></div>
+        <div id="history"></div>
+    </div>
 
-		//debugger
-		var answerHistory = [];
-		var storedHistory = localStorage.getItem("history");
-		// Check if storedHistory is not null or undefined
-		if (storedHistory) {
-			answerHistory = JSON.parse(storedHistory);
-		}
-		//score history
-		//var scoreHistory = [];
-		var mul_range_score_history = getStringList("mul_range_score_history");
+    <script>
+        var freez = false;
+        var score = 0;
+        var numQuestions = 0;
+        var numCorrect = 0;
+        var startTime = new Date().getTime();
+        var incorrectQuestions = [];
 
+        var motivationImages = [
+            "https://thumbs.dreamstime.com/z/vector-good-job-symbol-29548614.jpg",
+            "https://media.tenor.com/Trxl3FfZoIAAAAAC/very-good.gif",
+            "https://cdn.quotesgram.com/img/96/84/209882752-star-great-job.jpg",
+        ];
 
-		function setProblem() {
-			var problem = generateProblem();
-			debugger
-			if (problem != undefined) {
-				document.getElementById("problem").innerHTML = problem;
-				document.getElementById("answer").value = "";
-				document.getElementById("answer").focus();
-				document.getElementById("pendingqlist").innerText = qlist;
-			}
-		}
+        function displayMotivationImage() {
+            var randomIndex = Math.floor(Math.random() * motivationImages.length);
+            var imageUrl = motivationImages[randomIndex];
+            var imgElement = document.createElement("img");
+            imgElement.src = imageUrl;
+            var mot = document.getElementById('motivation');
+            mot.appendChild(imgElement);
+        }
 
-		let startTable = 6;
-		let endTable = 9;
+        var answerHistory = [];
+        var storedHistory = localStorage.getItem("history");
+        if (storedHistory) {
+            answerHistory = JSON.parse(storedHistory);
+        }
 
-		//TESTING-ONLY-THIS SHOULD NEVER GO PROD
-		// startTable = 6;
-		// endTable = 6;
+        var mul_range_score_history = JSON.parse(localStorage.getItem("mul_range_score_history")) || [];
 
-		var qlist = new Array()
-		for (let i = startTable; i <= endTable; i++) {
-			for (let j = 2; j <= 9; j++) {
-				const result = i * j;
-				//console.log(`${i} x ${j} = ${result}`);
-				qlist.push(`${i} x ${j} = `);// ${result}`)
-			}
-		}
-		console.log(qlist);
+        let startTable = 6;
+        let endTable = 9;
 
-		function generateProblem() {
-			//approach 1: random
-			/*var x = Math.floor(Math.random() * 4) + 6; // Generate a random number between 6 and 9
-			var y = Math.floor(Math.random() * 9) + 2; // Generate a random number between 2 and 10
-			return x + " x " + y + " = ";*/
+        var qlist = [];
+        for (let i = startTable; i <= endTable; i++) {
+            for (let j = 2; j <= 9; j++) {
+                qlist.push(`${i} x ${j} =`);
+            }
+        }
 
-			//approach 2: cover a multipication range
-			// Generate a random index
-			const randomIndex = Math.floor(Math.random() * qlist.length);
-			// Remove the item at the random index from the array
-			//debugger
-			const removedItem = qlist.splice(randomIndex, 1)[0];
-			return removedItem;
-		}
+        function setProblem() {
+            var problem = generateProblem();
+            if (problem !== undefined) {
+                document.getElementById("problem").innerHTML = problem;
+                document.getElementById("answer").value = "";
+                document.getElementById("answer").focus();
+                displayPendingQuestions();
+            }
+        }
 
-		function isTwoDigits(value) {
-			const regex = /^\d{2}$/;
-			return regex.test(value);
-		}
+        function generateProblem() {
+            const randomIndex = Math.floor(Math.random() * qlist.length);
+            const removedItem = qlist.splice(randomIndex, 1)[0];
+            return removedItem;
+        }
 
-		function checkAnswer() {
-			var userAnswer = document.getElementById("answer").value;
+        function displayPendingQuestions() {
+            var pendingListDiv = document.getElementById("pendingqlist");
+            pendingListDiv.innerHTML = "";
+            pendingListDiv.innerHTML = qlist.map(q => `<span class="tag">${q}</span>`).join('');
+        }
 
-			if (!isTwoDigits(userAnswer)) {
-				playAnotherSound();
-				return;
-			}
+        function isTwoDigits(value) {
+            const regex = /^\d{2}$/;
+            return regex.test(value);
+        }
 
-			if (userAnswer !== "") {
-				var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
-				var y = parseInt(document.getElementById("problem").innerHTML.split(" ")[2]);
-				var correctAnswer = x * y;
-				let obj = document.getElementById("result");
-				if (userAnswer == correctAnswer) {
-					obj.innerHTML = "Correct!";
-					obj.style.color = "green"
-					score++;
-					numCorrect++;
-				} else {
-					playFailSound();
-					obj.innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
-					obj.style.color = "red"
-					incorrectQuestions.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
-					answerHistory.push(x + " x " + y + " = " + userAnswer); // Add incorrect question to the array
-				}
-				if (qlist.length === 0) {
-					debugger
+        function checkAnswer() {
+            var userAnswer = document.getElementById("answer").value;
 
-					// Loop through all existing interval IDs
-					// for (let i = 0; i < window.timerInterval.length; i++) {
-					// 	// Clear each interval using the ID
-					// 	window.clearInterval(window.timerInterval[i]);
-					// }
-					freez = true;
-					//saveStringList("mul_range_score_history", );
-					debugger
-					mul_range_score_history.push(document.getElementById("timer").innerHTML);
-					// Display incorrect questions in the div
-					var elmScoreHistory = document.getElementById("elmScoreHistory");
-					elmScoreHistory.innerHTML = "<h2>History of Scores:</h2>";
-					mul_range_score_history.forEach(element => {
-						var question = document.createElement("p");
-						question.textContent = element;
-						elmScoreHistory.appendChild(question);
-					});
+            if (!isTwoDigits(userAnswer)) {
+                // Provide feedback or play an error sound
+                return;
+            }
 
-					saveStringList(mul_range_score_history, "mul_range_score_history", true);
-					playSuccessSound();
-					document.getElementById("problem").innerHTML = "Done!";
-					document.getElementById("answer").style.visibility = "hidden";
-					document.getElementById("btnSubmit").style.visibility = "hidden";
-				}
-				numQuestions++;
-				document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
-				setTimeout(setProblem, 300);
+            if (userAnswer !== "") {
+                var x = parseInt(document.getElementById("problem").innerHTML.split(" ")[0]);
+                var y = parseInt(document.getElementById("problem").innerHTML.split(" ")[2]);
+                var correctAnswer = x * y;
+                let obj = document.getElementById("result");
+                if (userAnswer == correctAnswer) {
+                    obj.innerHTML = "Correct!";
+                    obj.style.color = "green";
+                    score++;
+                    numCorrect++;
+                } else {
+                    obj.innerHTML = "Incorrect. The correct answer is " + correctAnswer + ".";
+                    obj.style.color = "red";
+                    incorrectQuestions.push(x + " x " + y + " = " + userAnswer);
+                    answerHistory.push(x + " x " + y + " = " + userAnswer);
+                }
+                if (qlist.length === 0) {
+                    freez = true;
+                    mul_range_score_history.push(document.getElementById("timer").innerHTML);
+                    displayScoreHistory();
+                    localStorage.setItem("mul_range_score_history", JSON.stringify(mul_range_score_history));
+                    displayMotivationImage();
+                    document.getElementById("problem").innerHTML = "Done!";
+                    document.getElementById("answer").style.visibility = "hidden";
+                    document.getElementById("btnSubmit").style.visibility = "hidden";
+                    document.getElementById("pendingqlist-container").style.display = "none";
+                }
+                numQuestions++;
+                document.getElementById("score").innerHTML = "Score: " + score + "/" + numQuestions;
+                setTimeout(setProblem, 300);
 
-				//debugger
+                displayIncorrectQuestions();
+                localStorage.setItem("history", JSON.stringify(answerHistory));
+                displayAnswerHistory();
+            }
+        }
 
-				// Display incorrect questions in the div
-				var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
-				incorrectQuestionsDiv.innerHTML = "<h2>Incorrect Questions:</h2>";
-				for (var i = 0; i < incorrectQuestions.length; i++) {
-					var question = document.createElement("p");
-					question.textContent = incorrectQuestions[i];
-					incorrectQuestionsDiv.appendChild(question);
-				}
+        function displayIncorrectQuestions() {
+            var incorrectQuestionsDiv = document.getElementById("incorrect-questions");
+            incorrectQuestionsDiv.innerHTML = "<h2>Incorrect Questions:</h2>";
+            incorrectQuestionsDiv.innerHTML += incorrectQuestions.map(q => `<p>${q}</p>`).join('');
+        }
 
-				// Store incorrect questions in local storage
-				localStorage.setItem("history", JSON.stringify(answerHistory));
-				// Display incorrect questions in the div
-				var incorrectQuestionsDiv = document.getElementById("history");
-				incorrectQuestionsDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
-				answerHistory.forEach(element => {
-					var question = document.createElement("p");
-					question.textContent = element;
-					incorrectQuestionsDiv.appendChild(question);
-				});
-			}
-		}
+        function displayAnswerHistory() {
+            var historyDiv = document.getElementById("history");
+            historyDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
+            historyDiv.innerHTML += answerHistory.map(q => `<p>${q}</p>`).join('');
+        }
 
-		document.getElementById("answer").addEventListener("keydown", function (event) {
-			if (event.keyCode === 13) {
-				event.preventDefault();
-				checkAnswer();
-			}
-		});
+        function displayScoreHistory() {
+            var elmScoreHistory = document.getElementById("elmScoreHistory");
+            elmScoreHistory.innerHTML = "<h2>History of Scores:</h2>";
+            elmScoreHistory.innerHTML += mul_range_score_history.map(score => `<p>${score}</p>`).join('');
+        }
 
-		setProblem();
+        document.getElementById("answer").addEventListener("keydown", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                checkAnswer();
+            }
+        });
 
-		// Update timer every second
-		clearInterval(timerInterval);
-		updateTimer();
-		var timerInterval = setInterval(updateTimer, 1000);
+        setProblem();
 
-		function updateTimer() {
+        var timerInterval = setInterval(updateTimer, 1000);
 
-			if (!freez) {
-				var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
-				document.getElementById("timer").innerHTML = elapsedTime;
-			}
-			//document.getElementById("answer").disabled = true;
-			if (parseInt(document.getElementById("timer").innerText) > 100 && document.getElementById("answer").style.background != "red") //100 - 10
-			{
-				//disable the timer timeout
-				/*
-				document.getElementById("answer").disabled = true;
-				document.getElementById("answer").style.background = "red";
+        function updateTimer() {
+            if (!freez) {
+                var elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000);
+                document.getElementById("timer").innerHTML = "Time: " + elapsedTime + "s";
+            }
+        }
 
-				if (score > 12) { //12 - 1
-					displayMotivationImage();
-				}*/
-			}
-		}
-
-		/* storage machanism */
-		function reset() {
-			debugger
-			localStorage.removeItem('history');
-		}
-	</script>
+        /* Storage mechanism */
+        function reset() {
+            localStorage.removeItem('history');
+            localStorage.removeItem('mul_range_score_history');
+            location.reload();
+        }
+    </script>
 </body>
 
 </html>
+

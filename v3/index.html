@@ -4,13 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Word Game</title>
+    <!-- Viewport meta tag for responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Existing scripts and styles -->
     <script src="https://apis.google.com/js/api.js"></script>
     <!--#approach02 for old browsers https://responsivevoice.org/app/?email=kdx.shaggy%40gmail.com&vgo_ee=AEFExsNcr4yLxSxzlAO39dp3ZG%2FIOixhj0XJ443Cm1uK5bE5%3A6ZZXm8z2Q9wwz7Lk4hzBq4H%2FF836tKtE-->
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=GLDq8jz8"></script>
     <script src="../fwLocalStorage.js"></script>
     <script src="../fw.js"></script>
     <script src="../helper.js"></script>
-    <link rel="stylesheet" href="../index.css"></link>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../css/sb.css">
+    <!-- Page specific -->
+    <link rel="stylesheet" href="../css/dict.css">
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -47,48 +55,84 @@
 </head>
 
 <body>
+    <!-- Home Button -->
+    <a href="../index.html" class="home-button">&#8962;</a>
 
-    <div id="maintitle">
-        <h3>Word Game v4.103</h3>
-    </div>
-    <span id="wordCount"></span>
-    <select id="myDropdown">
-        <option value="">Select an option</option>
-    </select>
-    Listen to the word and enter it below: <div id="word"></div>
-    <button id="startBtn" onclick="startProgram()">Start</button>
-    <button id="btnReadAll" onclick="readAll()">Read All</button>
-    <button id="read" onclick="readWord()">Read</button>
-    <input type="text" id="answer_dic" name="answer_dic" autofocus>
-    <button onclick="checkAnswer()">Submit</button>
-    <button id="studyBtn" onclick="study()">Study</button>
-    <button id="clearCache" onclick="deleteStringList('words')">Clear-Cache</button>
-    <button id="filterDifficultWords" onclick="filter('words', missedWords)">Filter Difficult Words</button>
-    <button onclick="refreshPage()">Refresh</button>
-    <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" />
-    forceExternalTextToSpeach
-    
-    <div id="result"></div>
+    <!-- Container for content -->
+    <div class="container">
 
-    <div id="def">
-        <div id="definition"></div>
-        <iframe id="definitionFrame" src="" title="def" style="width: 70%;height: 500px; float:right"></iframe>
-    </div>
-    <div id="study"></div>
-    <div id="correctAnswers">
-        <h6>Correct |</h6>
-        <ul id="correctList"></ul>
-    </div>
-    <div id="incorrectAnswers">
-        <h6>Incorrect </h6>
-        <ul id="incorrectList"></ul>
-    </div>
+	<div id="maintitle">
+          <h3>Word Game v4.103</h3>
+	Listen to the word & enter it below:
+	</div>
+        
+	<div>
+		<select id="myDropdown">
+		    <option value="">Select the word list</option>
+		</select><span id="wordCount"></span>
+		<span id="word"></span>
+	</div>
 
-    <!-- Add a new element to display the counter -->
-    <div id="studyCounterDisplay">Study Button Clicked: 0 times</div>
+        <!-- Input and buttons -->
+        <div class="input-group">
+            <input type="text" id="answer_dic" name="answer_dic" autofocus>
+            <button onclick="checkAnswer()">Submit</button>
+
+		<!-- Hamburger menu -->
+		<div class="hamburger-menu">
+		    <input type="checkbox" id="menu-toggle">
+		    <label for="menu-toggle" class="hamburger-icon">
+			&#9776; 
+		    </label>
+		    <div class="menu-content">
+			<button id="startBtn" onclick="startProgram()">Start</button>
+			<button id="btnReadAll" onclick="readAll()">Read All</button>
+			<button id="read" onclick="readWord()">Read</button>
+			<button id="studyBtn" onclick="study()">Study</button>
+			<button id="clearCache" onclick="deleteStringList('words')">Clear-Cache</button>
+			<button id="filterDifficultWords" onclick="filter('words', missedWords)">Filter Difficult Words</button>
+			<button onclick="refreshPage()">Refresh</button>
+			<label class="force-checkbox">
+			    <input type="checkbox" id="forceExternalTextToSpeach" name="forceExternalTextToSpeach" value="false" />
+			    Force External Text To Speech
+			</label>
+			<!-- Study counter display -->
+        		<div id="studyCounterDisplay">Studied 0 times</div>
+		    </div>
+		</div>
+
+
+        </div>
+
+
+
+        <div id="result"></div>
+
+<div id="study"></div>
+
+        <!-- Answers section -->
+        <div class="answers-container">
+            <div id="correctAnswers">
+                <h6>Correct</h6>
+                <ul id="correctList"></ul>
+            </div>
+            <div id="incorrectAnswers">
+                <h6>Incorrect</h6>
+                <ul id="incorrectList"></ul>
+            </div>
+        </div>
+
+        <!-- Definition section -->
+        <div id="def">
+            <div id="definition"></div>
+            <iframe id="definitionFrame" src="" title="def"></iframe>
+        </div>
+        
+    </div>
 
     <script>
 
+	let activeToasts = [];
         var words = [];
         var allWords = [];
         var missedWords = [];
@@ -185,13 +229,19 @@
             catch (err) {
                 responsiveVoice_apiRequests--;
                 alert(err);
-                document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + " error: " + err;
+                logProvider(char, count, voiceProvider, `error: ${err}`);
             }
 
             //show a hint
             var char = word.charAt(0);
-            document.getElementById("word").innerText = char + "**** (" + count + ") - provider: " + voiceProvider + ` responsiveVoice_apiRequests: ${responsiveVoice_apiRequests} ${log}`;
+            logProvider(char, count, voiceProvider, `responsiveVoice_apiRequests: ${responsiveVoice_apiRequests} ${log}`);
         }
+
+	function logProvider(char, count, voiceProvider, additionalInfo) {
+	    const logText = `${char}**** (${count}) - provider: ${voiceProvider} ${additionalInfo}`;
+	    //document.getElementById("word").innerText = logText;
+	    console.log(logText);
+	}
 
         let count = 0;
         let processWord = null;
@@ -305,7 +355,7 @@
             }
         }
 
-        function study() {
+       function study() {
             //debugger
             let std = document.getElementById("study");
 
@@ -325,12 +375,13 @@
                 if (w.indexOf('#') > -1) 	ul.appendChild(document.createElement("hr"));
 
                 li.addEventListener("click",
-                    function () {
+                   async function  () {
                         this.classList.add('studied');
                         this.classList.add('focused');
 
-                        getDefinitionAsync(w, _postfix)
+                        await getDefinitionAsync(w, _postfix)
                             .then(definition => {
+				
                                 debugger
                                 Toastify({
                                     text: definition,
@@ -351,6 +402,7 @@
                                     showDefinition(w, definition, _postfix); //getDefinition(w);
                             })
                             .catch(error => {
+				alert(error);
                                 console.error(error);
                             });
 
@@ -382,7 +434,7 @@
             document.getElementById("studyCounterDisplay").innerText = `Study Button Clicked: ${studyCounter} times`;
         }
 
-        function checkAnswer() {
+       async function checkAnswer() {
 
             processWords().stop();
 
@@ -390,7 +442,7 @@
             var correctAnswer = words[currentWordIndex];
 
             //show definition
-            var definition = getDefinitionAsync(correctAnswer);
+            var definition = await getDefinitionAsync(correctAnswer);
             showDefinition(correctAnswer, definition, _postfix);
 
             let result = document.getElementById("result");
@@ -418,9 +470,10 @@
             currentWordIndex++;        
             if(currentWordIndex === words.length)
             {
-                console.log('Report: ' + incorrectAnswers);    
-                alert('Report: ' + incorrectAnswers);    
-                sendEmail(correctAnswers, incorrectAnswers, studyCounter);
+		let emailLog = 'Report: incorrectAnswers: ' + incorrectAnswers + '| correctAnswers: ' + correctAnswers;
+                console.log(emailLog);    
+                //alert(emailLog);    
+                //sendEmail(correctAnswers, incorrectAnswers, studyCounter);
             }
             processWords().next();
         }
@@ -453,9 +506,8 @@
                 }
             }
         });
-
-        document.getElementById("word").innerText = "Loading.........";
-
+        
+	toastMsg("Loading...");
 
         try {
             //debugger
@@ -540,9 +592,36 @@
                 processWords().start();
                 updateCount();
             });
-            document.getElementById("word").innerText = "Ready!"
+
+            toastMsg("Ready!");
             updateCount();            
         }
+
+	function toastMsg(msg)
+	{
+		closeAllToasts();
+
+		const newToast = Toastify({
+		    text: msg,
+		    duration: 3000, // Duration in milliseconds
+		    gravity: "top", // Toast position: top or bottom
+		    position: "center", // Left, center, or right
+		    style: {
+			background: "linear-gradient(to right, #00b09b, #96c93d)", // Custom style
+			color: "#fff", // Text color
+		    },
+		});
+
+	       newToast.showToast();
+	       activeToasts.push(newToast);
+	}
+
+	// Function to close all active toasts
+	function closeAllToasts() {
+	    // Hide and remove all active toasts
+	    activeToasts.forEach(toast => toast.hideToast());
+	    activeToasts = []; // Clear the list
+	}
 
         function updateCount(){
             let wordCount = document.getElementById("wordCount");            
@@ -614,14 +693,15 @@
                 });                
 
                 //defSource1
-                const response = await fetch(defSource1);
-                const data = await response.json();
+                const response = await fetch(defSource1); //await fetch(defSource1);
+                const data = await response.json(); //await response.json();
                 if (data.items === undefined && data.error.code === 429) {
-                    return data.error.message;
+                    return 'YYY' + data.error.message;
                 } else {
                     const definition = data.items[0].snippet;
-                    defStringBuilder += `\n${definition}`;
+                    defStringBuilder += `XXX \n${definition}`;
                 }
+console.log(defStringBuilder);
 
                 return defStringBuilder;
 
@@ -644,6 +724,19 @@
             return "Are you sure you want to reload?";
           }
         }; 
+    </script>
+
+    <script>
+	document.addEventListener("DOMContentLoaded", function () {
+	    const menuToggle = document.getElementById("menu-toggle");
+	    const menuContent = document.querySelector(".menu-content");
+
+	    menuContent.addEventListener("click", function (event) {
+		if (event.target.tagName === "BUTTON" || event.target.tagName === "LABEL") {
+		    menuToggle.checked = false; // Uncheck the menu toggle
+		}
+	    });
+	});
     </script>
 
     <!-- <script>

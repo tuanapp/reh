@@ -4,147 +4,16 @@
     <meta charset="UTF-8">
     <title>Multiplication Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        /* Reset default margin and padding */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #1c1c1c;
-            color: #e6e6e6;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-
-        h1 {
-            margin-top: 20px;
-            font-size: 2em;
-        }
-
-        #game-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        #problem {
-            font-size: 3em;
-            margin-top: 20px;
-            word-wrap: break-word;
-        }
-
-        input[type="number"] {
-            font-size: 1.5em;
-            margin-top: 20px;
-            padding: 10px;
-            width: 100%;
-            max-width: 200px;
-            background-color: #2d2d2d;
-            color: #e6e6e6;
-            border: none;
-            border-radius: 5px;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            box-shadow: 0 0 5px #4CAF50;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 1.2em;
-            background-color: #4CAF50;
-            color: #e6e6e6;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #3e8e41;
-        }
-
-        #result {
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-
-        #score {
-            font-size: 2em;
-            margin-top: 20px;
-            background-color: #2d2d2d;
-            padding: 10px;
-            border-radius: 5px;
-            display: inline-block;
-        }
-
-        #timer {
-            font-size: 1.5em;
-            margin-top: 20px;
-            display: inline-block;
-            background-color: #2d2d2d;
-            padding: 10px;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-
-        #motivation img {
-            max-width: 100%;
-            height: auto;
-            margin-top: 20px;
-        }
-
-        #incorrect-questions, #history {
-            text-align: left;
-            margin: 20px auto;
-            max-width: 800px;
-        }
-
-        #incorrect-questions h2, #history h2 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-
-        #incorrect-questions p, #history p {
-            font-size: 1em;
-            margin-bottom: 5px;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 600px) {
-            #problem {
-                font-size: 2em;
-            }
-
-            input[type="number"] {
-                font-size: 1.2em;
-                max-width: 100%;
-            }
-
-            button {
-                font-size: 1em;
-                padding: 8px 16px;
-            }
-
-            #score, #timer {
-                font-size: 1.2em;
-                padding: 8px;
-            }
-
-            #result {
-                font-size: 1.2em;
-            }
-        }
-    </style>
+    <!-- Link to External CSS -->
+    <link rel="stylesheet" href="../css/sb.css">
 </head>
 <body>
-    <h1>Multiplication Game</h1>
-    <p>Enter the correct answer for each multiplication problem:</p>
+
+    <!-- Home Button -->
+    <a href="../index.html" class="home-button">&#8962;</a>
+
+    <h2>Multiplication Time Game</h2>
+    <p>Enter the correct answer for each problem:</p>
 
     <div id="game-container">
         <div id="problem"></div>
@@ -236,7 +105,7 @@
 
                 // Store incorrect questions in local storage
                 localStorage.setItem("history", JSON.stringify(answerHistory));
-                // Display incorrect questions in the div
+                // Display history of incorrect questions
                 var historyDiv = document.getElementById("history");
                 historyDiv.innerHTML = "<h2>History of Incorrect Questions:</h2>";
                 historyDiv.innerHTML += answerHistory.map(q => `<p>${q}</p>`).join('');
@@ -277,3 +146,4 @@
     </script>
 </body>
 </html>
+
