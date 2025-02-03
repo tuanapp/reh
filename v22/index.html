@@ -104,16 +104,17 @@
             pendingListDiv.innerHTML = qlist.map(q => `<span class="tag">${q}</span>`).join('');
         }
 
-        function isTwoDigits(value) {
-            const regex = /^\d{2}$/;
+        function isValidDigits(value) {
+            const regex = /^\d{1,3}$/;
             return regex.test(value);
         }
 
         function checkAnswer() {
             var userAnswer = document.getElementById("answer").value;
 
-            if (!isTwoDigits(userAnswer)) {
+            if (!isValidDigits(userAnswer)) {
                 // Provide feedback or play an error sound
+                alert('Wrong!')
                 return;
             }
 
